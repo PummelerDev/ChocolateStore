@@ -27,7 +27,7 @@ public class StorageController {
         return "allStorages";
     }
 
-    @GetMapping("/{id")
+    @GetMapping("/{id}")
     public String getStorageById(@PathVariable long id, ModelMap modelMap) {
         Storage storage = storageService.getStorageById(id);
         modelMap.addAttribute("storage", storage);
