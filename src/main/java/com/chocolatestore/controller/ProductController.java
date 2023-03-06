@@ -3,13 +3,15 @@ package com.chocolatestore.controller;
 import com.chocolatestore.domain.Product;
 import com.chocolatestore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/product")
 public class ProductController {
 
@@ -21,37 +23,35 @@ public class ProductController {
     }
 
     @GetMapping
-    public String getAllProduct(ModelMap modelMap) {
+    public ResponseEntity<List<Product>> getAllProduct() {
         List<Product> products = productService.getAllProducts();
-        modelMap.addAttribute("products", products);
-        return "allProducts";
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public String getProductById(@PathVariable long id, ModelMap modelMap) {
+    public ResponseEntity<Product> getProductById(@PathVariable long id) {
         Product product = productService.getProductById(id);
-        modelMap.addAttribute("product", product);
-        return "product";
+        return new ResponseEntity<>(product, product.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     // TODO: 26.02.2023 add validation
     @PostMapping
-    public String createProduct(@ModelAttribute Product product) {
+    public ResponseEntity<HttpStatus> createProduct(@ModelAttribute Product product) {
         int result = productService.createProduct(product);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping
     @ResponseBody
-    public String updateProductById(@ModelAttribute Product product) {
+    public ResponseEntity<HttpStatus> updateProductById(@ModelAttribute Product product) {
         int result = productService.updateProductById(product);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String deleteProductById(@PathVariable long id) {
+    public ResponseEntity<HttpStatus> deleteProductById(@PathVariable long id) {
         int result = productService.deleteProductById(id);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

@@ -3,13 +3,15 @@ package com.chocolatestore.controller;
 import com.chocolatestore.domain.Order;
 import com.chocolatestore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/order")
 public class OrderController {
 
@@ -21,37 +23,35 @@ public class OrderController {
     }
 
     @GetMapping
-    public String getAllOrders(ModelMap modelMap) {
+    public ResponseEntity<List<Order>> getAllOrders() {
         List<Order> orders = orderService.getAllOrders();
-        modelMap.addAttribute("orders", orders);
-        return "allOrders";
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public String getOrderById(@PathVariable long id, ModelMap modelMap) {
+    public ResponseEntity<Order> getOrderById(@PathVariable long id) {
         Order order = orderService.getOrderById(id);
-        modelMap.addAttribute("order", order);
-        return "order";
+        return new ResponseEntity<>(order, order.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     // TODO: 26.02.2023 add validation
     @PostMapping
-    public String createOrder(@ModelAttribute Order order) {
+    public ResponseEntity<HttpStatus> createOrder(@ModelAttribute Order order) {
         int result = orderService.createOrder(order);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping
     @ResponseBody
-    public String updateOrderById(@ModelAttribute Order order) {
+    public ResponseEntity<HttpStatus> updateOrderById(@ModelAttribute Order order) {
         int result = orderService.updateOrderById(order);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String deleteOrderById(@PathVariable long id) {
+    public ResponseEntity<HttpStatus> deleteOrderById(@PathVariable long id) {
         int result = orderService.deleteOrderById(id);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

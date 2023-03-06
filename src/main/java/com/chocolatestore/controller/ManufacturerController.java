@@ -3,13 +3,15 @@ package com.chocolatestore.controller;
 import com.chocolatestore.domain.Manufacturer;
 import com.chocolatestore.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/manufacturer")
 public class ManufacturerController {
 
@@ -21,37 +23,35 @@ public class ManufacturerController {
     }
 
     @GetMapping
-    public String getAllmanufacturers(ModelMap modelMap) {
+    public ResponseEntity<List<Manufacturer>> getAllManufacturers() {
         List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
-        modelMap.addAttribute("manufacturers", manufacturers);
-        return "allManufacturers";
+        return new ResponseEntity<>(manufacturers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public String getManufacturerById(@PathVariable long id, ModelMap modelMap) {
+    public ResponseEntity<Manufacturer> getManufacturerById(@PathVariable long id) {
         Manufacturer manufacturer = manufacturerService.getManufacturerById(id);
-        modelMap.addAttribute("manufacturer", manufacturer);
-        return "manufacturer";
+        return new ResponseEntity<>(manufacturer, manufacturer.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     // TODO: 26.02.2023 add validation
     @PostMapping
-    public String createManufacturer(@RequestParam String name) {
+    public ResponseEntity<HttpStatus> createManufacturer(@RequestParam String name) {
         int result = manufacturerService.createManufacturer(name);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping
     @ResponseBody
-    public String updateManufacturerById(@ModelAttribute Manufacturer manufacturer) {
+    public ResponseEntity<HttpStatus> updateManufacturerById(@ModelAttribute Manufacturer manufacturer) {
         int result = manufacturerService.updateManufacturer(manufacturer);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String deleteManufacturerById(@PathVariable long id) {
+    public ResponseEntity<HttpStatus> deleteManufacturerById(@PathVariable long id) {
         int result = manufacturerService.deleteManufacturerById(id);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

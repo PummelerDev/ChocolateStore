@@ -3,13 +3,15 @@ package com.chocolatestore.controller;
 import com.chocolatestore.domain.Storage;
 import com.chocolatestore.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/storage")
 public class StorageController {
 
@@ -21,37 +23,35 @@ public class StorageController {
     }
 
     @GetMapping
-    public String getAllStorages(ModelMap modelMap) {
+    public ResponseEntity<List<Storage>> getAllStorages() {
         List<Storage> storages = storageService.getAllStorages();
-        modelMap.addAttribute("storages", storages);
-        return "allStorages";
+        return new ResponseEntity<>(storages, HttpStatus.OK);
     }
 
-    @GetMapping("/{id")
-    public String getStorageById(@PathVariable long id, ModelMap modelMap) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Storage> getStorageById(@PathVariable long id) {
         Storage storage = storageService.getStorageById(id);
-        modelMap.addAttribute("storage", storage);
-        return "storage";
+        return new ResponseEntity<>(storage, storage.getId() > 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     // TODO: 27.02.2023 add validation
     @PostMapping
-    public String createStorage(@RequestParam String name) {
+    public ResponseEntity<HttpStatus> createStorage(@RequestParam String name) {
         int result = storageService.createStorage(name);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping
     @ResponseBody
-    public String updateStorageById(@ModelAttribute Storage storage) {
+    public ResponseEntity<HttpStatus> updateStorageById(@ModelAttribute Storage storage) {
         int result = storageService.updateStorage(storage);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public String deleteStorageById(@RequestParam long id) {
+    public ResponseEntity<HttpStatus> deleteStorageById(@RequestParam long id) {
         int result = storageService.deleteStorageById(id);
-        return result > 0 ? "successful" : "unsuccessful";
+        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }
