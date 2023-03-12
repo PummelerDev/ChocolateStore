@@ -2,6 +2,8 @@ package com.chocolatestore.domain;
 
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.PositiveOrZero;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -12,7 +14,11 @@ public class Customer {
     private String lastName;
     private String address;
     private String phone;
+
+    @Email(regexp = "^([a-zA-Z0-9]+(\\.|\\-|_)?[a-zA-Z0-9]+)+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]{2,4}$")
     private String email;
+
+    @PositiveOrZero
     private double purchaseAmount;
     private String login;
     private String password;

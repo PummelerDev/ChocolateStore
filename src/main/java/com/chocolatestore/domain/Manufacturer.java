@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Component
 public class Manufacturer {
-    private long id =-1; // TODO: 26.02.2023  default -1 or not?
+    private long id;
     private String name;
     private Timestamp created;
     private Timestamp changed;

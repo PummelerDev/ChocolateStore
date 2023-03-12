@@ -5,8 +5,6 @@ import com.chocolatestore.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,22 +32,19 @@ public class StorageController {
         return new ResponseEntity<>(storage, storage.getId() > 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
-    // TODO: 27.02.2023 add validation
     @PostMapping
-    public ResponseEntity<HttpStatus> createStorage(@RequestParam String name) {
+    public ResponseEntity<HttpStatus> createStorage(@RequestBody String name) {
         int result = storageService.createStorage(name);
         return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping
-    @ResponseBody
-    public ResponseEntity<HttpStatus> updateStorageById(@ModelAttribute Storage storage) {
+    public ResponseEntity<HttpStatus> updateStorageById(@RequestBody Storage storage) {
         int result = storageService.updateStorage(storage);
         return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
     public ResponseEntity<HttpStatus> deleteStorageById(@RequestParam long id) {
         int result = storageService.deleteStorageById(id);
         return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
