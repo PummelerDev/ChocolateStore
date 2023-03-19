@@ -40,8 +40,10 @@ public class CustomerController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        int result = customerService.createCustomer(customer);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        /*int result = */
+        customerService.createCustomer(customer);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+//        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping
@@ -49,13 +51,15 @@ public class CustomerController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        int result = customerService.updateById(customer);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        customerService.updateById(customer);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteCustomerById(@PathVariable long id) {
-        int result = customerService.deleteById(id);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        customerService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }
