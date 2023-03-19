@@ -32,25 +32,24 @@ public class OrderService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return orders;
         }
-        return orders;
     }
 
     public Order getOrderById(long id) {
         Order order = new Order();
         try {
-            order = (Order) jdbcTemplate.query(
+            order = jdbcTemplate.queryForObject(
                     "select * from orders where id =?",
                     new OrderMapper(),
                     id
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return order;
         }
-        if (order.getId() <= 0) {
-            throw new OrderNotFoundException("there is no order with id " + id);
-        }
-        return order;
     }
 
     public int createOrder(Order order) {
@@ -65,8 +64,9 @@ public class OrderService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int updateOrderById(Order order) {
@@ -81,10 +81,11 @@ public class OrderService {
                     !order.isCancelled() ? theSameOrderFromDB.isCancelled() : order.isCancelled(),
                     !order.isFinished() ? theSameOrderFromDB.isFinished() : order.isFinished()
             );
-        } catch (DataAccessException | OrderNotFoundException e) {
+        } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int deleteOrderById(long id) {
@@ -96,8 +97,9 @@ public class OrderService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     private long createOrderId() {

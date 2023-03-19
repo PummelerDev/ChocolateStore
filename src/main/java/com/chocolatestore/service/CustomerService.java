@@ -31,8 +31,9 @@ public class CustomerService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return customersList;
         }
-        return customersList;
     }
 
     public Customer getCustomerById(long id) {
@@ -44,11 +45,9 @@ public class CustomerService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return customer;
         }
-        if (customer.getId() <= 0) {
-            throw new CustomerNotFoundException("there is no customer with id " + id);
-        }
-        return customer;
     }
 
     public int createCustomer(Customer customer) {
@@ -60,8 +59,9 @@ public class CustomerService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int updateById(Customer customer) {
@@ -81,10 +81,11 @@ public class CustomerService {
                     !customer.isDeleted() ? theSameCustomerFromDB.isDeleted() : customer.isDeleted(),
                     customer.getId()
             );
-        } catch (DataAccessException | CustomerNotFoundException e) {
+        } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int deleteById(long id) {
@@ -96,7 +97,8 @@ public class CustomerService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 }

@@ -34,25 +34,24 @@ public class ProductService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return products;
         }
-        return products;
     }
 
     public Product getProductById(long id) {
         Product product = new Product();
         try {
-            product = (Product) jdbcTemplate.query(
+            product = jdbcTemplate.queryForObject(
                     "select * from products where id =?",
                     new ProductMapper(),
                     id
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return product;
         }
-        if (product.getId() <= 0) {
-            throw new ProductNotFoundException("there is no product with id " + id);
-        }
-        return product;
     }
 
     public int createProduct(Product product) {
@@ -70,8 +69,9 @@ public class ProductService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int updateProductById(Product product) {
@@ -89,10 +89,11 @@ public class ProductService {
                     product.getPrice() == 0 ? theSameProductFromDB.getPrice() : product.getPrice(),
                     product.getId()
             );
-        } catch (DataAccessException | ProductNotFoundException e) {
+        } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int deleteProductById(long id) {
@@ -104,7 +105,8 @@ public class ProductService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 }

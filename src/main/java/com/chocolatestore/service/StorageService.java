@@ -30,25 +30,24 @@ public class StorageService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return storages;
         }
-        return storages;
     }
 
     public Storage getStorageById(long id) {
         Storage storage = new Storage();
         try {
-            storage = (Storage) jdbcTemplate.query(
+            storage = jdbcTemplate.queryForObject(
                     "select * from storages where id =?",
                     new StorageMapper(),
                     id
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return storage;
         }
-        if (storage.getId() <= 0) {
-            throw new StorageNotFoundException("there is no storage with id " + id);
-        }
-        return storage;
     }
 
     public int createStorage(String name) {
@@ -60,8 +59,9 @@ public class StorageService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int updateStorage(Storage storage) {
@@ -73,10 +73,11 @@ public class StorageService {
                     StringUtils.isBlank(storage.getName()) ? theSameStorageFromDB.getName() : storage.getName(),
                     storage.getId()
             );
-        } catch (DataAccessException | StorageNotFoundException e) {
+        } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int deleteStorageById(long id) {
@@ -88,7 +89,8 @@ public class StorageService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 }

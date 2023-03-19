@@ -32,25 +32,24 @@ public class ManufacturerService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return manufacturers;
         }
-        return manufacturers;
     }
 
     public Manufacturer getManufacturerById(long id) {
         Manufacturer manufacturer = new Manufacturer();
         try {
-            manufacturer = (Manufacturer) jdbcTemplate.query(
+            manufacturer = jdbcTemplate.queryForObject(
                     "select * from manufacturers where id =?",
                     new ManufacturerMapper(),
                     id
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return manufacturer;
         }
-        if (manufacturer.getId() <= 0) {
-            throw new ManufacturerNotFoundException("there is no manufacturer with id " + id);
-        }
-        return manufacturer;
     }
 
     public int createManufacturer(String name) {
@@ -62,8 +61,9 @@ public class ManufacturerService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int updateManufacturer(Manufacturer manufacturer) {
@@ -75,10 +75,11 @@ public class ManufacturerService {
                     StringUtils.isBlank(manufacturer.getName()) ? theSameManufacturerFromDB.getName() : manufacturer.getName(),
                     manufacturer.getId()
             );
-        } catch (DataAccessException | ManufacturerNotFoundException e) {
+        } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 
     public int deleteManufacturerById(long id) {
@@ -90,7 +91,8 @@ public class ManufacturerService {
             );
         } catch (DataAccessException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return result;
     }
 }
