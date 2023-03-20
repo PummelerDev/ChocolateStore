@@ -1,7 +1,6 @@
 package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.Manufacturer;
-import com.chocolatestore.exceptions.ManufacturerNotFoundException;
 import com.chocolatestore.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,20 +33,20 @@ public class ManufacturerController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createManufacturer(@RequestBody String name) {
-        int result = manufacturerService.createManufacturer(name);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+    public ResponseEntity<HttpStatus> createManufacturer(@RequestBody Manufacturer manufacturer) {
+        manufacturerService.createManufacturer(manufacturer);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<HttpStatus> updateManufacturerById(@RequestBody Manufacturer manufacturer) {
-        int result = manufacturerService.updateManufacturer(manufacturer);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        manufacturerService.updateManufacturer(manufacturer);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteManufacturerById(@PathVariable long id) {
-        int result = manufacturerService.deleteManufacturerById(id);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        manufacturerService.deleteManufacturerById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

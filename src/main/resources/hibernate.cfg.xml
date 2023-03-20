@@ -16,6 +16,10 @@
         <property name="format_sql">true</property>
 
         <mapping class="com.chocolatestore.domain.Customer"/>
+        <mapping class="com.chocolatestore.domain.Manufacturer"/>
+        <mapping class="com.chocolatestore.domain.Product"/>
+        <mapping class="com.chocolatestore.domain.Order"/>
+        <mapping class="com.chocolatestore.domain.Storage"/>
 
     </session-factory>
 </hibernate-configuration>

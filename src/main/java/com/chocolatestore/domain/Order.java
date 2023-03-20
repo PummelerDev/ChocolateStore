@@ -1,20 +1,48 @@
 package com.chocolatestore.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@Component
+//@Component
+@Entity
+@Table(name = "orders")
 public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
+    @SequenceGenerator(name = "order_seq", sequenceName = "orders_id_seq1", allocationSize = 1)
     private long id;
+
+    @Column(name = "order_number")
     private long orderNumber;
-    private long productId;
-    private long customerId;
+
+    @OneToOne
+    @JsonManagedReference
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @OneToOne
+    @JsonManagedReference
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @Column(name = "quantity")
     private int quantity;
+
+    @Column(name = "created")
     private Timestamp created;
+
+    @Column(name = "changed")
     private Timestamp changed;
+
+    @Column(name = "cancelled")
     private boolean cancelled;
+
+    @Column(name = "finished")
     private boolean finished;
 
     @Override
@@ -22,8 +50,8 @@ public class Order {
         return "Order{" +
                 "id=" + id +
                 ", orderNumber=" + orderNumber +
-                ", productId=" + productId +
-                ", customerId=" + customerId +
+                ", product=" + product +
+                ", customer=" + customer +
                 ", quantity=" + quantity +
                 ", created=" + created +
                 ", changed=" + changed +
@@ -37,12 +65,12 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return id == order.id && orderNumber == order.orderNumber && productId == order.productId && customerId == order.customerId && quantity == order.quantity && cancelled == order.cancelled && finished == order.finished && Objects.equals(created, order.created) && Objects.equals(changed, order.changed);
+        return id == order.id && orderNumber == order.orderNumber && quantity == order.quantity && cancelled == order.cancelled && finished == order.finished && Objects.equals(product, order.product) && Objects.equals(customer, order.customer) && Objects.equals(created, order.created) && Objects.equals(changed, order.changed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, orderNumber, productId, customerId, quantity, created, changed, cancelled, finished);
+        return Objects.hash(id, orderNumber, product, customer, quantity, created, changed, cancelled, finished);
     }
 
     public long getId() {
@@ -61,20 +89,20 @@ public class Order {
         this.orderNumber = orderNumber;
     }
 
-    public long getProductId() {
-        return productId;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductId(long productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public long getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public int getQuantity() {
@@ -114,6 +142,21 @@ public class Order {
     }
 
     public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    public Order() {
+    }
+
+    public Order(long id, long orderNumber, Product product, Customer customer, int quantity, Timestamp created, Timestamp changed, boolean cancelled, boolean finished) {
+        this.id = id;
+        this.orderNumber = orderNumber;
+        this.product = product;
+        this.customer = customer;
+        this.quantity = quantity;
+        this.created = created;
+        this.changed = changed;
+        this.cancelled = cancelled;
         this.finished = finished;
     }
 }

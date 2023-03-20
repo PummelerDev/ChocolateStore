@@ -1,15 +1,25 @@
 package com.chocolatestore.domain;
 
-import org.springframework.stereotype.Component;
-
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@Component
+//@Component
+@Entity
+@Table(name = "manufacturers")
 public class Manufacturer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "manufacturer_seq")
+    @SequenceGenerator(name = "manufacturer_seq", sequenceName = "manufacturers_id_seq", allocationSize = 1)
     private long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "created")
     private Timestamp created;
+
+    @Column(name = "changed")
     private Timestamp changed;
 
     @Override

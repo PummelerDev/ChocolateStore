@@ -34,19 +34,19 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> createOrder(@RequestBody Order order) {
-        int result = orderService.createOrder(order);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        orderService.createOrder(order);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<HttpStatus> updateOrderById(@RequestBody Order order) {
-        int result = orderService.updateOrderById(order);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        orderService.updateOrderById(order);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteOrderById(@PathVariable long id) {
-        int result = orderService.deleteOrderById(id);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        orderService.deleteOrderById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

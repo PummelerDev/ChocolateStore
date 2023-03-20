@@ -34,19 +34,19 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> createProduct(@RequestBody Product product) {
-        int result = productService.createProduct(product);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        productService.createProduct(product);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<HttpStatus> updateProductById(@RequestBody Product product) {
-        int result = productService.updateProductById(product);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        productService.updateProductById(product);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteProductById(@PathVariable long id) {
-        int result = productService.deleteProductById(id);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        productService.deleteProductById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
