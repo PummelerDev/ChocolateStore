@@ -34,19 +34,19 @@ public class StorageController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> createStorage(@RequestBody String name) {
-        int result = storageService.createStorage(name);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        storageService.createStorage(name);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping
     public ResponseEntity<HttpStatus> updateStorageById(@RequestBody Storage storage) {
-        int result = storageService.updateStorage(storage);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        storageService.updateStorage(storage);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteStorageById(@RequestParam long id) {
-        int result = storageService.deleteStorageById(id);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        storageService.deleteStorageById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
