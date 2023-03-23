@@ -56,7 +56,7 @@ public class OrderService {
         int result = 0;
         try {
             result = jdbcTemplate.update(
-                    "insert into orders(id, order_number, product_id, customer_id, quantity, created, changed, canceled, finished) values(default, ?, ?, ?, ?, default, default, default, default)",
+                    "insert into orders(id, order_number, product_id, customer_id, quantity, created, changed, cancelled, finished) values(default, ?, ?, ?, ?, default, default, default, default)",
                     createOrderId(),
                     order.getProductId(),
                     order.getCustomerId(),
