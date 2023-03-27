@@ -1,51 +1,32 @@
-package com.chocolatestore.domain;
+package com.chocolatestore.domain.DTO;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.chocolatestore.domain.Kind;
+import com.chocolatestore.domain.Manufacturer;
+import com.chocolatestore.domain.Topping;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-//@Component
-@Entity
-@Table(name = "products")
-public class Product {
+public class ProductDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_seq")
-    @SequenceGenerator(name = "products_seq", sequenceName = "products_id_seq", allocationSize = 1)
     private long id;
 
-    @Column(name = "kind")
-    @Enumerated(EnumType.STRING)
     private Kind kind;
 
-    @Column(name = "topping")
-    @Enumerated(EnumType.STRING)
     private Topping topping;
 
-    @ManyToOne
-//    @JsonBackReference
-    @JoinColumn(name = "manufacturer_id", nullable = false)
     private Manufacturer manufacturer;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "weight")
     private int weight;
 
-    @Column(name = "price")
     private double price;
 
-    @Column(name = "created")
     private Timestamp created;
 
-    @Column(name = "changed")
     private Timestamp changed;
 
     @Override
@@ -68,7 +49,7 @@ public class Product {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
+        ProductDTO product = (ProductDTO) o;
         return id == product.id && weight == product.weight && Double.compare(product.price, price) == 0 && kind == product.kind && topping == product.topping && Objects.equals(manufacturer, product.manufacturer) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(created, product.created) && Objects.equals(changed, product.changed);
     }
 
@@ -157,10 +138,10 @@ public class Product {
         this.changed = changed;
     }
 
-    public Product() {
+    public ProductDTO() {
     }
 
-    public Product(long id, Kind kind, Topping topping, Manufacturer manufacturer, String name, String description, int weight, double price, Timestamp created, Timestamp changed) {
+    public ProductDTO(long id, Kind kind, Topping topping, Manufacturer manufacturer, String name, String description, int weight, double price, Timestamp created, Timestamp changed) {
         this.id = id;
         this.kind = kind;
         this.topping = topping;

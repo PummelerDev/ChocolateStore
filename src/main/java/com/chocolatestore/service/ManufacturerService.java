@@ -1,5 +1,6 @@
 package com.chocolatestore.service;
 
+import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
 import com.chocolatestore.repository.ManufacturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class ManufacturerService {
         this.manufacturerRepository = manufacturerRepository;
     }
 
-    public ArrayList<Manufacturer> getAllManufacturers() {
+    public ArrayList<ManufacturerDTO> getAllManufacturers() {
            return manufacturerRepository.getAllManufacturers();
     }
 

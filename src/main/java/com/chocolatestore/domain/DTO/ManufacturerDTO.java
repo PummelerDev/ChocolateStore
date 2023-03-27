@@ -1,33 +1,20 @@
-package com.chocolatestore.domain;
+package com.chocolatestore.domain.DTO;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.chocolatestore.domain.Product;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
 
-//@Component
-@Entity
-@Table(name = "manufacturers")
-public class Manufacturer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "manufacturer_seq")
-    @SequenceGenerator(name = "manufacturer_seq", sequenceName = "manufacturers_id_seq", allocationSize = 1)
+public class ManufacturerDTO {
     private long id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "created")
     private Timestamp created;
 
-    @Column(name = "changed")
     private Timestamp changed;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "manufacturer")
-//    @JsonManagedReference
     private Collection<Product> products;
 
     @Override
@@ -44,7 +31,7 @@ public class Manufacturer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Manufacturer that = (Manufacturer) o;
+        ManufacturerDTO that = (ManufacturerDTO) o;
         return id == that.id && Objects.equals(name, that.name) && Objects.equals(created, that.created) && Objects.equals(changed, that.changed);
     }
 
@@ -93,10 +80,10 @@ public class Manufacturer {
         this.products = products;
     }
 
-    public Manufacturer() {
+    public ManufacturerDTO() {
     }
 
-    public Manufacturer(long id, String name, Timestamp created, Timestamp changed, Collection<Product> products) {
+    public ManufacturerDTO(long id, String name, Timestamp created, Timestamp changed, Collection<Product> products) {
         this.id = id;
         this.name = name;
         this.created = created;

@@ -1,6 +1,8 @@
 package com.chocolatestore.repository;
 
+import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
+import com.chocolatestore.mappers.HibernateDTOMapper;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,18 +16,22 @@ import java.util.Optional;
 @Repository
 public class ManufacturerRepository {
 
-    public ArrayList<Manufacturer> getAllManufacturers() {
+    public ArrayList<ManufacturerDTO> getAllManufacturers() {
         ArrayList<Manufacturer> manufacturers = new ArrayList<>();
+        ArrayList<ManufacturerDTO> manufacturersDTO = new ArrayList<>();
         try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
              Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Query query = session.createQuery("from Manufacturer");
             manufacturers = (ArrayList<Manufacturer>) query.getResultList();
+            for(Manufacturer manufacturer : manufacturers){
+                manufacturersDTO.add(HibernateDTOMapper.getManufacturerDTO(manufacturer));
+            }
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
         }
-        return manufacturers;
+        return manufacturersDTO;
     }
 
     public Manufacturer getManufacturerById(long id) {

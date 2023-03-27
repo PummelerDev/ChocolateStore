@@ -1,5 +1,6 @@
 package com.chocolatestore.controller;
 
+import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
 import com.chocolatestore.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class ManufacturerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Manufacturer>> getAllManufacturers() {
-        List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
+    public ResponseEntity<List<ManufacturerDTO>> getAllManufacturers() {
+        List<ManufacturerDTO> manufacturers = manufacturerService.getAllManufacturers();
         return new ResponseEntity<>(manufacturers, HttpStatus.OK);
     }
 
