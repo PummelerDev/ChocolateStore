@@ -1,5 +1,6 @@
 package com.chocolatestore.controller;
 
+import com.chocolatestore.domain.DTO.ProductDTO;
 import com.chocolatestore.domain.Product;
 import com.chocolatestore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +22,15 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProduct() {
-        List<Product> products = productService.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    public ResponseEntity<List<ProductDTO>> getAllProduct() {
+        List<ProductDTO> productsDTO = productService.getAllProducts();
+        return new ResponseEntity<>(productsDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable long id) {
-        Product product = productService.getProductById(id);
-        return new ResponseEntity<>(product, product.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable long id) {
+        ProductDTO productDTO = productService.getProductById(id);
+        return new ResponseEntity<>(productDTO, productDTO.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @PostMapping

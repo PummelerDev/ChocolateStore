@@ -28,9 +28,9 @@ public class ManufacturerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Manufacturer> getManufacturerById(@PathVariable long id) {
-        Manufacturer manufacturer = manufacturerService.getManufacturerById(id);
-        return new ResponseEntity<>(manufacturer, manufacturer.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+    public ResponseEntity<ManufacturerDTO> getManufacturerById(@PathVariable long id) {
+        ManufacturerDTO manufacturerDTO = manufacturerService.getManufacturerById(id);
+        return new ResponseEntity<>(manufacturerDTO, manufacturerDTO.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @PostMapping

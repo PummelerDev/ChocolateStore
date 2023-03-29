@@ -11,17 +11,18 @@ import java.util.List;
 public class HibernateDTOMapper {
     public static ManufacturerDTO getManufacturerDTO(Manufacturer manufacturer) {
         List<Product> productList = new ArrayList<>();
-        for (Product product : manufacturer.getProducts()) {
-            ProductDTO productDTO = new ProductDTO();
-            productDTO.setId(product.getId());
-            productDTO.setKind(product.getKind());
-            productDTO.setTopping(product.getTopping());
-            productDTO.setName(product.getName());
-            productDTO.setDescription(product.getDescription());
-            productDTO.setPrice(product.getPrice());
-            productDTO.setWeight(product.getWeight());
-            productDTO.setCreated(product.getCreated());
-            productDTO.setChanged(product.getChanged());
+        for (Product pr : manufacturer.getProducts()) {
+            Product product = new Product();
+            product.setId(pr.getId());
+            product.setKind(pr.getKind());
+            product.setTopping(pr.getTopping());
+            product.setName(pr.getName());
+            product.setDescription(pr.getDescription());
+            product.setPrice(pr.getPrice());
+            product.setWeight(pr.getWeight());
+            product.setCreated(pr.getCreated());
+            product.setChanged(pr.getChanged());
+            productList.add(product);
         }
         ManufacturerDTO manufacturerDTO = new ManufacturerDTO();
         manufacturerDTO.setId(manufacturer.getId());

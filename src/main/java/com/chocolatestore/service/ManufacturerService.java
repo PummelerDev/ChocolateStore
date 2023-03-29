@@ -22,7 +22,7 @@ public class ManufacturerService {
            return manufacturerRepository.getAllManufacturers();
     }
 
-    public Manufacturer getManufacturerById(long id) {
+    public ManufacturerDTO getManufacturerById(long id) {
         return manufacturerRepository.getManufacturerById(id);
     }
 

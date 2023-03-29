@@ -1,5 +1,6 @@
 package com.chocolatestore.service;
 
+import com.chocolatestore.domain.DTO.ProductDTO;
 import com.chocolatestore.domain.Product;
 import com.chocolatestore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,11 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public ArrayList<Product> getAllProducts() {
+    public ArrayList<ProductDTO> getAllProducts() {
         return productRepository.getAllProducts();
     }
 
-    public Product getProductById(long id) {
+    public ProductDTO getProductById(long id) {
         return productRepository.getProductById(id);
     }
 
