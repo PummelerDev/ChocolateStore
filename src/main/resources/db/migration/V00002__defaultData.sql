@@ -1,5 +1,5 @@
-insert into customers values (default, 'Jack', 'Sparrow', 'Tortuga', 1234523, 'jack.tortuga@pirat.rom', default, 'jacklogin', 'jackpassword', default, default);
-insert into customers values (default, 'Elon', 'Musk', 'Texas', '310-363-6000', 'sales@spacex.com', default, 'elonlogin', 'password', default, default);
+insert into customers values (default, 'Jack', 'Sparrow', 'Tortuga', 1234523, 'jack.tortuga@pirat.rum', default, 'jacklogin', 'jackpassword', default, default);
+insert into customers values (default, 'Gandalf', 'the Gray', 'Middle Earth', 'i will find you myself', 'gandalf.the_white_soon@wizard.mag', default, 'gandalflogin', 'password', default, default);
 insert into customers values (default, 'Remus ', 'Lupin', 'Hogwarts', 'send me an owl', 'lupin.professor@were.wolf', default, 'remuslogin', 'password', default, default);
 
 insert into manufacturers values (default, 'Ritter Sport', default, default);
