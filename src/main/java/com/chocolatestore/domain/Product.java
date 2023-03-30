@@ -26,7 +26,7 @@ public class Product {
     private Topping topping;
 
     @ManyToOne
-//    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "manufacturer_id", nullable = false)
     private Manufacturer manufacturer;
 

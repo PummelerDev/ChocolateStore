@@ -2,11 +2,13 @@ package com.chocolatestore.service;
 
 import com.chocolatestore.domain.DTO.ProductDTO;
 import com.chocolatestore.domain.Product;
+import com.chocolatestore.mappers.HibernateDTOMapper;
 import com.chocolatestore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -19,24 +21,33 @@ public class ProductService {
     }
 
     public ArrayList<ProductDTO> getAllProducts() {
-        return productRepository.getAllProducts();
+        List<Product> products = productRepository.findAll();
+        List<ProductDTO> productsDTO = new ArrayList<>();
+        for (Product product :
+                products) {
+            productsDTO.add(HibernateDTOMapper.getProductDTO(product));
+        }
+        return (ArrayList<ProductDTO>) productsDTO;
     }
 
+    // TODO: 31.03.2023 productRepocitory returns optional. need to rewrite it.
     public ProductDTO getProductById(long id) {
-        return productRepository.getProductById(id);
+        return HibernateDTOMapper.getProductDTO(productRepository.findById(id).get());
     }
 
-    public void createProduct(Product product) {
-        productRepository.createProduct(product);
+    public Product createProduct(Product product) {
+        return productRepository.save(product);
     }
 
-    public void updateProductById(Product product) {
-        productRepository.updateProduct(product);
+    public Product updateProductById(Product product) {
+        return productRepository.saveAndFlush(product);
     }
 
     public void deleteProductById(long id) {
-        Product product = new Product();
-        product.setId(id);
-        productRepository.deleteProductById(product);
+        productRepository.deleteById(id);
+    }
+
+    public void deleteProduct(Product product) {
+        productRepository.delete(product);
     }
 }

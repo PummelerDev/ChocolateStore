@@ -18,24 +18,47 @@ public class CustomerService {
     }
 
     public ArrayList<Customer> getAllCustomers() {
-        return customerRepository.getAllCustomers();
+        return (ArrayList<Customer>) customerRepository.findAll();
     }
 
     public Customer getCustomerById(long id) {
-        return customerRepository.getCustomerById(id);
+        return customerRepository.findById(id).get();
     }
 
-    public void createCustomer(Customer customer) {
-        customerRepository.createCustomer(customer);
+    public Customer createCustomer(Customer customer) {
+        return customerRepository.save(customer);
     }
 
-    public void updateById(Customer customer) {
-        customerRepository.updateCustomer(customer);
+    public Customer updateById(Customer customer) {
+        return customerRepository.saveAndFlush(customer);
+//        int result = 0;
+//        try {
+//            Customer theSameCustomerFromDB = getCustomerById(customer.getId());
+//            result = jdbcTemplate.update(
+//                    "update customers set first_name=?, last_name=?, address=?, phone=?, email=?, purchase_amount=?, login=?, password=?, changed=default, is_deleted=? where id=?",
+//                    StringUtils.isBlank(customer.getFirstName()) ? theSameCustomerFromDB.getFirstName() : customer.getFirstName(),
+//                    StringUtils.isBlank(customer.getLastName()) ? theSameCustomerFromDB.getLastName() : customer.getLastName(),
+//                    StringUtils.isBlank(customer.getAddress()) ? theSameCustomerFromDB.getAddress() : customer.getAddress(),
+//                    StringUtils.isBlank(customer.getPhone()) ? theSameCustomerFromDB.getPhone() : customer.getPhone(),
+//                    StringUtils.isBlank(customer.getEmail()) ? theSameCustomerFromDB.getEmail() : customer.getEmail(),
+//                    customer.getPurchaseAmount() == 0 ? theSameCustomerFromDB.getPurchaseAmount() : customer.getPurchaseAmount(),
+//                    StringUtils.isBlank(customer.getLogin()) ? theSameCustomerFromDB.getLogin() : customer.getLogin(),
+//                    StringUtils.isBlank(customer.getPassword()) ? theSameCustomerFromDB.getPassword() : customer.getPassword(),
+//                    !customer.isDeleted() ? theSameCustomerFromDB.isDeleted() : customer.isDeleted(),
+//                    customer.getId()
+//            );
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//        } finally {
+//            return result;
+//        }
     }
 
-    public void deleteById(long id) {
-        Customer customer = new Customer();
-        customer.setId(id);
-        customerRepository.deleteCustomerById(customer);
+    public void deleteCustomer(Customer customer) {
+        customerRepository.delete(customer);
+    }
+
+    public void deleteCustomerById(long id) {
+        customerRepository.deleteById(id);
     }
 }

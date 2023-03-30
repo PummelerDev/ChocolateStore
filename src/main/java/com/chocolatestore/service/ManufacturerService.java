@@ -2,11 +2,13 @@ package com.chocolatestore.service;
 
 import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
+import com.chocolatestore.mappers.HibernateDTOMapper;
 import com.chocolatestore.repository.ManufacturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ManufacturerService {
@@ -19,24 +21,34 @@ public class ManufacturerService {
     }
 
     public ArrayList<ManufacturerDTO> getAllManufacturers() {
-           return manufacturerRepository.getAllManufacturers();
+        List<Manufacturer> manufacturers = manufacturerRepository.findAll();
+        List<ManufacturerDTO> manufacturersDTO = new ArrayList<>();
+        for (Manufacturer manufacturer :
+                manufacturers) {
+            manufacturersDTO.add(HibernateDTOMapper.getManufacturerDTO(manufacturer));
+        }
+        return (ArrayList<ManufacturerDTO>) manufacturersDTO;
     }
 
     public ManufacturerDTO getManufacturerById(long id) {
-        return manufacturerRepository.getManufacturerById(id);
+        return HibernateDTOMapper.getManufacturerDTO(manufacturerRepository.findById(id).get());
     }
 
-    public void createManufacturer(Manufacturer manufacturer) {
-        manufacturerRepository.createManufacturer(manufacturer);
+    public Manufacturer createManufacturer(Manufacturer manufacturer) {
+        return manufacturerRepository.save(manufacturer);
     }
 
-    public void updateManufacturer(Manufacturer manufacturer) {
-        manufacturerRepository.updateManufacturer(manufacturer);
+    public Manufacturer updateManufacturer(Manufacturer manufacturer) {
+        return manufacturerRepository.saveAndFlush(manufacturer);
     }
 
     public void deleteManufacturerById(long id) {
-       Manufacturer manufacturer = new Manufacturer();
-       manufacturer.setId(id);
-       manufacturerRepository.deleteManufacturerById(manufacturer);
+        Manufacturer manufacturer = new Manufacturer();
+        manufacturer.setId(id);
+        manufacturerRepository.deleteById(id);
+    }
+
+    public void deleteManufacturer(Manufacturer manufacturer) {
+        manufacturerRepository.delete(manufacturer);
     }
 }

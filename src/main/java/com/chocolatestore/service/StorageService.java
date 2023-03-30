@@ -1,15 +1,10 @@
 package com.chocolatestore.service;
 
 import com.chocolatestore.domain.Storage;
-import com.chocolatestore.mappers.StorageMapper;
 import com.chocolatestore.repository.StorageRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 
 @Service
@@ -23,26 +18,28 @@ public class StorageService {
     }
 
     public ArrayList<Storage> getAllStorages() {
-        return storageRepository.getAllStorages();
+        return (ArrayList<Storage>) storageRepository.findAll();
     }
 
     public Storage getStorageById(long id) {
-        return storageRepository.getStorageById(id);
+        return storageRepository.findById(id).get();
     }
 
-    public void createStorage(String name) {
+    public Storage createStorage(String name) {
         Storage storage = new Storage();
         storage.setName(name);
-        storageRepository.createStorage(storage);
+        return storageRepository.save(storage);
     }
 
-    public void updateStorage(Storage storage) {
-        storageRepository.updateStorage(storage);
+    public Storage updateStorage(Storage storage) {
+        return storageRepository.saveAndFlush(storage);
     }
 
     public void deleteStorageById(long id) {
-        Storage storage = new Storage();
-        storage.setId(id);
-        storageRepository.deleteStorageById(storage);
+        storageRepository.deleteById(id);
+    }
+
+    public void deleteStorage(Storage storage) {
+        storageRepository.delete(storage);
     }
 }

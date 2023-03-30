@@ -23,25 +23,27 @@ public class OrderService {
     }
 
     public ArrayList<Order> getAllOrders() {
-        return orderRepository.getAllOrders();
+        return (ArrayList<Order>) orderRepository.findAll();
     }
 
     public Order getOrderById(long id) {
-        return orderRepository.getOrderById(id);
+        return orderRepository.findById(id).get();
     }
 
-    public void createOrder(Order order) {
-        orderRepository.createOrder(order);
+    public Order createOrder(Order order) {
+        return orderRepository.save(order);
     }
 
-    public void updateOrderById(Order order) {
-        orderRepository.updateOrder(order);
+    public Order updateOrderById(Order order) {
+        return orderRepository.saveAndFlush(order);
     }
 
     public void deleteOrderById(long id) {
-        Order order = new Order();
-        order.setId(id);
-        orderRepository.deleteOrderById(order);
+        orderRepository.deleteById(id);
+    }
+
+    public void deleteOrder(Order order) {
+        orderRepository.delete(order);
     }
 
     private long createOrderId() {

@@ -27,7 +27,7 @@ public class Manufacturer {
     private Timestamp changed;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "manufacturer")
-//    @JsonManagedReference
+    @JsonBackReference
     private Collection<Product> products;
 
     @Override

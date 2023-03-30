@@ -31,19 +31,16 @@ public class CustomerController {
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable long id) {
         Customer customer = customerService.getCustomerById(id);
-        return new ResponseEntity<>(customer, customer.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(customer, customer != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @PostMapping
     public ResponseEntity<HttpStatus> createCustomer(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
-        System.out.println(customer);
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        /*int result = */
-        customerService.createCustomer(customer);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-//        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        Customer c = customerService.createCustomer(customer);
+        return new ResponseEntity<>(c != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping
@@ -51,15 +48,22 @@ public class CustomerController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        customerService.updateById(customer);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+        Customer c = customerService.updateById(customer);
+        return new ResponseEntity<>(c != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteCustomerById(@PathVariable long id) {
-        customerService.deleteById(id);
+        customerService.deleteCustomerById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
+
+//    @PutMapping
+//    public ResponseEntity<HttpStatus> deleteCustomer(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            return new ResponseEntity<>(HttpStatus.CONFLICT);
+//        }
+//        customerService.deleteCustomer(customer);
+//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//    }
 }
