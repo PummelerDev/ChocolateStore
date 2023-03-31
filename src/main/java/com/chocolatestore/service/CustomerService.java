@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -29,6 +30,13 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    public Optional<Customer> getCustomerByLogin(String login) {
+        return customerRepository.findCustomerByLogin(login);
+    }
+
+    public String getRole(long id) {
+        return customerRepository.getRole(id);
+    }
     public Customer updateById(Customer customer) {
         return customerRepository.saveAndFlush(customer);
 //        int result = 0;
