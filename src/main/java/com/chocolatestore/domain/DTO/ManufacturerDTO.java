@@ -1,29 +1,19 @@
 package com.chocolatestore.domain.DTO;
 
-import com.chocolatestore.domain.Product;
-
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
 
 public class ManufacturerDTO {
-    private long id;
 
     private String name;
 
-    private Timestamp created;
-
-    private Timestamp changed;
-
-    private Collection<Product> products;
+    private Collection<ProductDTOResponse> products;
 
     @Override
     public String toString() {
-        return "Manufacturer{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", created=" + created +
-                ", changed=" + changed +
+        return "ManufacturerDTO{" +
+                "name='" + name + '\'' +
+                ", products=" + products +
                 '}';
     }
 
@@ -32,20 +22,12 @@ public class ManufacturerDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ManufacturerDTO that = (ManufacturerDTO) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(created, that.created) && Objects.equals(changed, that.changed);
+        return Objects.equals(name, that.name) && Objects.equals(products, that.products);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, created, changed);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+        return Objects.hash(name, products);
     }
 
     public String getName() {
@@ -56,38 +38,19 @@ public class ManufacturerDTO {
         this.name = name;
     }
 
-    public Timestamp getCreated() {
-        return created;
-    }
-
-    public void setCreated(Timestamp created) {
-        this.created = created;
-    }
-
-    public Timestamp getChanged() {
-        return changed;
-    }
-
-    public void setChanged(Timestamp changed) {
-        this.changed = changed;
-    }
-
-    public Collection<Product> getProducts() {
+    public Collection<ProductDTOResponse> getProducts() {
         return products;
     }
 
-    public void setProducts(Collection<Product> products) {
+    public void setProducts(Collection<ProductDTOResponse> products) {
         this.products = products;
     }
 
     public ManufacturerDTO() {
     }
 
-    public ManufacturerDTO(long id, String name, Timestamp created, Timestamp changed, Collection<Product> products) {
-        this.id = id;
+    public ManufacturerDTO(String name, Collection<ProductDTOResponse> products) {
         this.name = name;
-        this.created = created;
-        this.changed = changed;
         this.products = products;
     }
 }

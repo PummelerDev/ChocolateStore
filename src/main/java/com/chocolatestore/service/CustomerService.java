@@ -1,64 +1,66 @@
 package com.chocolatestore.service;
 
 import com.chocolatestore.domain.Customer;
+import com.chocolatestore.domain.DTO.CustomerDTO;
+import com.chocolatestore.mappers.CustomerMapper;
 import com.chocolatestore.repository.CustomerRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerService {
 
-    CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
+        this.customerMapper = customerMapper;
     }
 
-    public ArrayList<Customer> getAllCustomers() {
-        return (ArrayList<Customer>) customerRepository.findAll();
+    public ArrayList<CustomerDTO> getAllCustomers() {
+        return (ArrayList<CustomerDTO>) customerRepository
+                .findAll()
+                .stream()
+                .map(customerMapper::mapCustomerToCustomerDTO)
+                .collect(Collectors.toList());
     }
 
-    public Customer getCustomerById(long id) {
-        return customerRepository.findById(id).get();
+    public CustomerDTO getCustomerById(long id) {
+        return customerMapper.mapCustomerToCustomerDTO(customerRepository.findById(id).get());
     }
 
-    public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public Customer createCustomer(CustomerDTO cd) {
+        return customerRepository.save(customerMapper.mapCustomerDTOToCustomer(cd));
     }
 
-    public Customer updateById(Customer customer) {
-        return customerRepository.saveAndFlush(customer);
-//        int result = 0;
-//        try {
-//            Customer theSameCustomerFromDB = getCustomerById(customer.getId());
-//            result = jdbcTemplate.update(
-//                    "update customers set first_name=?, last_name=?, address=?, phone=?, email=?, purchase_amount=?, login=?, password=?, changed=default, is_deleted=? where id=?",
-//                    StringUtils.isBlank(customer.getFirstName()) ? theSameCustomerFromDB.getFirstName() : customer.getFirstName(),
-//                    StringUtils.isBlank(customer.getLastName()) ? theSameCustomerFromDB.getLastName() : customer.getLastName(),
-//                    StringUtils.isBlank(customer.getAddress()) ? theSameCustomerFromDB.getAddress() : customer.getAddress(),
-//                    StringUtils.isBlank(customer.getPhone()) ? theSameCustomerFromDB.getPhone() : customer.getPhone(),
-//                    StringUtils.isBlank(customer.getEmail()) ? theSameCustomerFromDB.getEmail() : customer.getEmail(),
-//                    customer.getPurchaseAmount() == 0 ? theSameCustomerFromDB.getPurchaseAmount() : customer.getPurchaseAmount(),
-//                    StringUtils.isBlank(customer.getLogin()) ? theSameCustomerFromDB.getLogin() : customer.getLogin(),
-//                    StringUtils.isBlank(customer.getPassword()) ? theSameCustomerFromDB.getPassword() : customer.getPassword(),
-//                    !customer.isDeleted() ? theSameCustomerFromDB.isDeleted() : customer.isDeleted(),
-//                    customer.getId()
-//            );
-//        } catch (DataAccessException e) {
-//            e.printStackTrace();
-//        } finally {
-//            return result;
-//        }
+    @Transactional // TODO: 03.04.2023 transactional?
+    public Customer updateById(long id,CustomerDTO cd) {
+        Customer fromDB = customerRepository.findById(id).get();
+        Customer intoDB = new Customer();
+        intoDB.setId(id);
+        intoDB.setFirstName(StringUtils.isBlank(cd.getFirstName())? fromDB.getFirstName() : cd.getFirstName());
+        intoDB.setLastName(StringUtils.isBlank(cd.getLastName())? fromDB.getLastName() : cd.getLastName());
+        intoDB.setAddress(StringUtils.isBlank(cd.getAddress())? fromDB.getAddress() : cd.getAddress());
+        intoDB.setPhone(StringUtils.isBlank(cd.getPhone())? fromDB.getPhone() : cd.getPhone());
+        intoDB.setEmail(StringUtils.isBlank(cd.getEmail())? fromDB.getEmail() : cd.getEmail());
+        intoDB.setLogin(StringUtils.isBlank(cd.getLogin())? fromDB.getLogin() : cd.getLogin());
+        intoDB.setPassword(StringUtils.isBlank(cd.getPassword())? fromDB.getPassword() : cd.getPassword());
+        return customerRepository.saveAndFlush(intoDB);
     }
 
     public void deleteCustomer(Customer customer) {
         customerRepository.delete(customer);
     }
 
-    public void deleteCustomerById(long id) {
+    public boolean deleteCustomerById(long id) {
         customerRepository.deleteById(id);
+        return !customerRepository.existsById(id);
     }
 }

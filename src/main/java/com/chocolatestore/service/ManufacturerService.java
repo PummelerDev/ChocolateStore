@@ -2,50 +2,55 @@ package com.chocolatestore.service;
 
 import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
-import com.chocolatestore.mappers.HibernateDTOMapper;
+import com.chocolatestore.mappers.ManufacturerMapper;
 import com.chocolatestore.repository.ManufacturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ManufacturerService {
 
-    ManufacturerRepository manufacturerRepository;
+    private final ManufacturerRepository manufacturerRepository;
+    private final ManufacturerMapper manufacturerMapper;
 
     @Autowired
-    public ManufacturerService(ManufacturerRepository manufacturerRepository) {
+    public ManufacturerService(ManufacturerRepository manufacturerRepository, ManufacturerMapper manufacturerMapper) {
         this.manufacturerRepository = manufacturerRepository;
+        this.manufacturerMapper = manufacturerMapper;
     }
 
     public ArrayList<ManufacturerDTO> getAllManufacturers() {
-        List<Manufacturer> manufacturers = manufacturerRepository.findAll();
-        List<ManufacturerDTO> manufacturersDTO = new ArrayList<>();
-        for (Manufacturer manufacturer :
-                manufacturers) {
-            manufacturersDTO.add(HibernateDTOMapper.getManufacturerDTO(manufacturer));
-        }
-        return (ArrayList<ManufacturerDTO>) manufacturersDTO;
+        return (ArrayList<ManufacturerDTO>) manufacturerRepository
+                .findAll()
+                .stream()
+                .map(manufacturerMapper::mapManufacturerToManufacturerDTO)
+                .collect(Collectors.toList());
     }
 
     public ManufacturerDTO getManufacturerById(long id) {
-        return HibernateDTOMapper.getManufacturerDTO(manufacturerRepository.findById(id).get());
+        return manufacturerMapper.mapManufacturerToManufacturerDTO(manufacturerRepository.findById(id).get());
     }
 
-    public Manufacturer createManufacturer(Manufacturer manufacturer) {
-        return manufacturerRepository.save(manufacturer);
+    public Manufacturer createManufacturer(String manufacturerName) {
+        Manufacturer m = new Manufacturer();
+        m.setName(manufacturerName);
+        return manufacturerRepository.save(m);
     }
 
-    public Manufacturer updateManufacturer(Manufacturer manufacturer) {
-        return manufacturerRepository.saveAndFlush(manufacturer);
+    public Manufacturer updateManufacturer(long id, String manufacturerName) {
+        Manufacturer fromDB = manufacturerRepository.findById(id).get();
+        Manufacturer intoDB = new Manufacturer();
+        intoDB.setId(id);
+        intoDB.setName(manufacturerName.isBlank()? fromDB.getName() : manufacturerName);
+        return manufacturerRepository.saveAndFlush(intoDB);
     }
 
-    public void deleteManufacturerById(long id) {
-        Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setId(id);
+    public boolean deleteManufacturerById(long id) {
         manufacturerRepository.deleteById(id);
+        return !manufacturerRepository.existsById(id);
     }
 
     public void deleteManufacturer(Manufacturer manufacturer) {

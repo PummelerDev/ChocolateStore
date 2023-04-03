@@ -1,6 +1,7 @@
 package com.chocolatestore.controller;
 
-import com.chocolatestore.domain.DTO.ProductDTO;
+import com.chocolatestore.domain.DTO.ProductDTOResponse;
+import com.chocolatestore.domain.DTO.ProductDTORequest;
 import com.chocolatestore.domain.Product;
 import com.chocolatestore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,32 +23,32 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProduct() {
-        List<ProductDTO> productsDTO = productService.getAllProducts();
-        return new ResponseEntity<>(productsDTO, HttpStatus.OK);
+    public ResponseEntity<List<ProductDTOResponse>> getAllProduct() {
+        List<ProductDTOResponse> pdr = productService.getAllProducts();
+        return new ResponseEntity<>(pdr, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable long id) {
-        ProductDTO productDTO = productService.getProductById(id);
-        return new ResponseEntity<>(productDTO, productDTO.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+    public ResponseEntity<ProductDTOResponse> getProductById(@PathVariable long id) {
+        ProductDTOResponse pdr = productService.getProductById(id);
+        return new ResponseEntity<>(pdr, pdr != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createProduct(@RequestBody Product product) {
-        productService.createProduct(product);
+    public ResponseEntity<HttpStatus> createProduct(@RequestBody ProductDTORequest pdr) {
+        productService.createProduct(pdr);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping
-    public ResponseEntity<HttpStatus> updateProductById(@RequestBody Product product) {
-        productService.updateProductById(product);
+    @PutMapping("/{id}")
+    public ResponseEntity<HttpStatus> updateProductById(@PathVariable long id, @RequestBody ProductDTORequest pdr) {
+        Product p = productService.updateProductById(id, pdr);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteProductById(@PathVariable long id) {
-        productService.deleteProductById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        boolean result = productService.deleteProductById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

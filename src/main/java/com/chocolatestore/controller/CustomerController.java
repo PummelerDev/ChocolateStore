@@ -1,6 +1,7 @@
 package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.Customer;
+import com.chocolatestore.domain.DTO.CustomerDTO;
 import com.chocolatestore.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,42 +24,43 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-        List<Customer> customers = customerService.getAllCustomers();
-        return new ResponseEntity<>(customers, HttpStatus.OK);
+    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
+        List<CustomerDTO> customersDTO = customerService.getAllCustomers();
+        return new ResponseEntity<>(customersDTO, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable long id) {
-        Customer customer = customerService.getCustomerById(id);
-        return new ResponseEntity<>(customer, customer != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable long id) {
+        CustomerDTO cd = customerService.getCustomerById(id);
+        return new ResponseEntity<>(cd, cd != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createCustomer(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> createCustomer(@RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        Customer c = customerService.createCustomer(customer);
+        Customer c = customerService.createCustomer(cd);
         return new ResponseEntity<>(c != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
-    @PutMapping
-    public ResponseEntity<HttpStatus> updateCustomerById(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
+    @PutMapping("/{id}")
+    public ResponseEntity<HttpStatus> updateCustomerById(@PathVariable long id, @RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        Customer c = customerService.updateById(customer);
+        Customer c = customerService.updateById(id, cd);
+        // TODO: 03.04.2023 how to check?
         return new ResponseEntity<>(c != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteCustomerById(@PathVariable long id) {
-        customerService.deleteCustomerById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        boolean result = customerService.deleteCustomerById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-//    @PutMapping
+//    @DeleteMapping
 //    public ResponseEntity<HttpStatus> deleteCustomer(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
 //        if (bindingResult.hasErrors()) {
 //            return new ResponseEntity<>(HttpStatus.CONFLICT);

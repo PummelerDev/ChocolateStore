@@ -23,31 +23,31 @@ public class ManufacturerController {
 
     @GetMapping
     public ResponseEntity<List<ManufacturerDTO>> getAllManufacturers() {
-        List<ManufacturerDTO> manufacturers = manufacturerService.getAllManufacturers();
-        return new ResponseEntity<>(manufacturers, HttpStatus.OK);
+        List<ManufacturerDTO> md = manufacturerService.getAllManufacturers();
+        return new ResponseEntity<>(md, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ManufacturerDTO> getManufacturerById(@PathVariable long id) {
-        ManufacturerDTO manufacturerDTO = manufacturerService.getManufacturerById(id);
-        return new ResponseEntity<>(manufacturerDTO, manufacturerDTO.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+        ManufacturerDTO md = manufacturerService.getManufacturerById(id);
+        return new ResponseEntity<>(md, md != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createManufacturer(@RequestBody Manufacturer manufacturer) {
-        manufacturerService.createManufacturer(manufacturer);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<HttpStatus> createManufacturer(@RequestParam String manufacturerName) {
+        Manufacturer m = manufacturerService.createManufacturer(manufacturerName);
+        return new ResponseEntity<>(m != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
-    @PutMapping
-    public ResponseEntity<HttpStatus> updateManufacturerById(@RequestBody Manufacturer manufacturer) {
-        manufacturerService.updateManufacturer(manufacturer);
+    @PutMapping("/{id}")
+    public ResponseEntity<HttpStatus> updateManufacturerById(@PathVariable long id, @RequestParam String manufacturerName) {
+        Manufacturer m = manufacturerService.updateManufacturer(id, manufacturerName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteManufacturerById(@PathVariable long id) {
-        manufacturerService.deleteManufacturerById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        boolean result = manufacturerService.deleteManufacturerById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }
