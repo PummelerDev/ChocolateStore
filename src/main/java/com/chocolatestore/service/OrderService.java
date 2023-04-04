@@ -1,45 +1,53 @@
 package com.chocolatestore.service;
 
+import com.chocolatestore.domain.DTO.OrderDTORequest;
+import com.chocolatestore.domain.DTO.OrderDTOResponse;
 import com.chocolatestore.domain.Order;
+import com.chocolatestore.mappers.OrderMapper;
 import com.chocolatestore.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
-    OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
+        this.orderMapper = orderMapper;
     }
 
-    public ArrayList<Order> getAllOrders() {
-        return (ArrayList<Order>) orderRepository.findAll();
+    public ArrayList<OrderDTOResponse> getAllOrders() {
+        return (ArrayList<OrderDTOResponse>) orderRepository
+                .findAll()
+                .stream()
+                .map(orderMapper::mapOrderToOrderDTOResponse)
+                .collect(Collectors.toList());
     }
 
-    public Order getOrderById(long id) {
-        return orderRepository.findById(id).get();
+    public OrderDTOResponse getOrderById(long id) {
+        return orderMapper.mapOrderToOrderDTOResponse(orderRepository.findById(id).get());
     }
 
-    public Order createOrder(Order order) {
-        return orderRepository.save(order);
+    public Order createOrder(OrderDTORequest o) {
+        return orderRepository.save(o, createOrderId());
     }
 
-    public Order updateOrderById(Order order) {
-        return orderRepository.saveAndFlush(order);
+    public Order updateOrderById(long id, OrderDTORequest o) {
+        return orderRepository.saveAndFlushCustom(id, o);
     }
 
-    public void deleteOrderById(long id) {
+    public boolean deleteOrderById(long id) {
         orderRepository.deleteById(id);
+        return !orderRepository.existsById(id);
     }
 
     public void deleteOrder(Order order) {
