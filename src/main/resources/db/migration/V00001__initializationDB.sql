@@ -76,6 +76,7 @@ create table if not exists orders
     created      timestamp default now(),
     changed      timestamp default now(),
     cancelled    boolean   default false,
+    collected    boolean   default false,
     finished     boolean   default false
     );
 
