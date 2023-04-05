@@ -45,13 +45,25 @@ public class OrderService {
         return orderRepository.saveAndFlushCustom(id, o);
     }
 
-    public boolean deleteOrderById(long id) {
+    public boolean removeOrderById(long id) {
         orderRepository.deleteById(id);
         return !orderRepository.existsById(id);
     }
 
-    public void deleteOrder(Order order) {
-        orderRepository.delete(order);
+    public boolean cancelOrderByNumberAndId(long orderNumber, long id) {
+       return orderRepository.cancelOrderByNumberAndId(orderNumber, id);
+    }
+
+    public boolean cancelAllOrdersByNumber(long orderNumber) {
+        return orderRepository.cancelAllOrdersByNumber(orderNumber);
+    }
+
+    public boolean collectOrderByNumber(long orderNumber) {
+        return orderRepository.collectOrderByNumber(orderNumber);
+    }
+
+    public boolean finishOrderByNumber(long orderNumber) {
+        return orderRepository.finishOrderByNumber(orderNumber);
     }
 
     private long createOrderId() {

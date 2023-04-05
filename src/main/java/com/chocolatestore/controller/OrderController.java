@@ -46,9 +46,33 @@ public class OrderController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteOrderById(@PathVariable long id) {
-        boolean result = orderService.deleteOrderById(id);
+    @DeleteMapping("/{id}/remove")
+    public ResponseEntity<HttpStatus> removeOrderById(@PathVariable long id) {
+        boolean result = orderService.removeOrderById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/cancel/{orderNumber}/{id}")
+    public ResponseEntity<HttpStatus> cancelOrderByNumberAndId(@PathVariable long orderNumber, @PathVariable long id) {
+        boolean result = orderService.cancelOrderByNumberAndId(orderNumber, id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/cancel/{orderNumber}")
+    public ResponseEntity<HttpStatus> cancelAllOrdersByNumber(@PathVariable long orderNumber) {
+        boolean result = orderService.cancelAllOrdersByNumber(orderNumber);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/collect/{orderNumber}")
+    public ResponseEntity<HttpStatus> collectOrderByNumber(@PathVariable long orderNumber) {
+        boolean result = orderService.collectOrderByNumber(orderNumber);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/finish/{orderNumber}")
+    public ResponseEntity<HttpStatus> finishOrderByNumber(@PathVariable long orderNumber) {
+        boolean result = orderService.finishOrderByNumber(orderNumber);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

@@ -45,9 +45,9 @@ public class ManufacturerController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteManufacturerById(@PathVariable long id) {
-        boolean result = manufacturerService.deleteManufacturerById(id);
+    @DeleteMapping("/{id}/remove")
+    public ResponseEntity<HttpStatus> removeManufacturerById(@PathVariable long id) {
+        boolean result = manufacturerService.removeManufacturerById(id);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

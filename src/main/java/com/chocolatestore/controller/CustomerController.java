@@ -60,12 +60,15 @@ public class CustomerController {
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-//    @DeleteMapping
-//    public ResponseEntity<HttpStatus> deleteCustomer(@RequestBody @Valid Customer customer, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            return new ResponseEntity<>(HttpStatus.CONFLICT);
-//        }
-//        customerService.deleteCustomer(customer);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    @DeleteMapping("/{id}/restore")
+    public ResponseEntity<HttpStatus> restoreCustomerById(@PathVariable long id) {
+        boolean result = customerService.restoreCustomerById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @DeleteMapping("/{id}/remove")
+    public ResponseEntity<HttpStatus> removeCustomerById(@PathVariable long id) {
+        boolean result = customerService.removeCustomerById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
 }

@@ -48,12 +48,8 @@ public class ManufacturerService {
         return manufacturerRepository.saveAndFlush(intoDB);
     }
 
-    public boolean deleteManufacturerById(long id) {
+    public boolean removeManufacturerById(long id) {
         manufacturerRepository.deleteById(id);
         return !manufacturerRepository.existsById(id);
-    }
-
-    public void deleteManufacturer(Manufacturer manufacturer) {
-        manufacturerRepository.delete(manufacturer);
     }
 }

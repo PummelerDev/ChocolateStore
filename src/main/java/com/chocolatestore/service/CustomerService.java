@@ -55,11 +55,15 @@ public class CustomerService {
         return customerRepository.saveAndFlush(intoDB);
     }
 
-    public void deleteCustomer(Customer customer) {
-        customerRepository.delete(customer);
+    public boolean deleteCustomerById(long id) {
+        return customerRepository.deleteByIdCustom(id);
     }
 
-    public boolean deleteCustomerById(long id) {
+    public boolean restoreCustomerById(long id) {
+        return customerRepository.restoreByIdCustom(id);
+    }
+
+    public boolean removeCustomerById(long id) {
         customerRepository.deleteById(id);
         return !customerRepository.existsById(id);
     }

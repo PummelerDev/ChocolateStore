@@ -17,6 +17,7 @@ public class OrderDTOResponse {
     private Timestamp created;
     private Timestamp changed;
     private boolean cancelled;
+    private boolean collected;
     private boolean finished;
 
     @Override
@@ -29,6 +30,7 @@ public class OrderDTOResponse {
                 ", created=" + created +
                 ", changed=" + changed +
                 ", cancelled=" + cancelled +
+                ", collected=" + collected +
                 ", finished=" + finished +
                 '}';
     }
@@ -38,12 +40,12 @@ public class OrderDTOResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderDTOResponse that = (OrderDTOResponse) o;
-        return orderNumber == that.orderNumber && quantity == that.quantity && cancelled == that.cancelled && finished == that.finished && Objects.equals(product, that.product) && Objects.equals(customer, that.customer) && Objects.equals(created, that.created) && Objects.equals(changed, that.changed);
+        return orderNumber == that.orderNumber && quantity == that.quantity && cancelled == that.cancelled && collected == that.collected && finished == that.finished && Objects.equals(product, that.product) && Objects.equals(customer, that.customer) && Objects.equals(created, that.created) && Objects.equals(changed, that.changed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderNumber, product, customer, quantity, created, changed, cancelled, finished);
+        return Objects.hash(orderNumber, product, customer, quantity, created, changed, cancelled, collected, finished);
     }
 
     public long getOrderNumber() {
@@ -102,6 +104,14 @@ public class OrderDTOResponse {
         this.cancelled = cancelled;
     }
 
+    public boolean isCollected() {
+        return collected;
+    }
+
+    public void setCollected(boolean collected) {
+        this.collected = collected;
+    }
+
     public boolean isFinished() {
         return finished;
     }
@@ -113,7 +123,7 @@ public class OrderDTOResponse {
     public OrderDTOResponse() {
     }
 
-    public OrderDTOResponse(long orderNumber, ProductDTOResponse product, CustomerDTO customer, int quantity, Timestamp created, Timestamp changed, boolean cancelled, boolean finished) {
+    public OrderDTOResponse(long orderNumber, ProductDTOResponse product, CustomerDTO customer, int quantity, Timestamp created, Timestamp changed, boolean cancelled, boolean collected, boolean finished) {
         this.orderNumber = orderNumber;
         this.product = product;
         this.customer = customer;
@@ -121,6 +131,7 @@ public class OrderDTOResponse {
         this.created = created;
         this.changed = changed;
         this.cancelled = cancelled;
+        this.collected = collected;
         this.finished = finished;
     }
 }

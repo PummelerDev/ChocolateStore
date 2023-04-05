@@ -14,6 +14,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Order save(@Param("order") OrderDTORequest order, @Param("orderNumber") long orderNumber);
 
     @Query(nativeQuery = true, value = "update orders set product_id =:#{#order.productId}, quantity =:#{#order.quantity} where id =:#{#id} returning *")
-    Order saveAndFlushCustom(@Param("id") long id , @Param("order") OrderDTORequest odr);
+    Order saveAndFlushCustom(@Param("id") long id, @Param("order") OrderDTORequest odr);
 
+    @Query(nativeQuery = true, value = "update orders set cancelled = true, changed = default where order_number=:orderNumber and id=:id returning cancelled")
+    boolean cancelOrderByNumberAndId(long orderNumber, long id);
+
+    @Query(nativeQuery = true, value = "update orders set cancelled = true, changed = default where order_number=:orderNumber returning cancelled")
+    boolean cancelAllOrdersByNumber(long orderNumber);
+
+    @Query(nativeQuery = true, value = "update orders set collected = true, changed = default where order_number=:orderNumber returning collected")
+    boolean collectOrderByNumber(long orderNumber);
+
+    @Query(nativeQuery = true, value = "update orders set finished = true, changed = default where order_number=:orderNumber returning finished")
+    boolean finishOrderByNumber(long orderNumber);
 }

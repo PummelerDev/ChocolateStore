@@ -46,9 +46,9 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteProductById(@PathVariable long id) {
-        boolean result = productService.deleteProductById(id);
+    @DeleteMapping("/{id}/remove")
+    public ResponseEntity<HttpStatus> removeProductById(@PathVariable long id) {
+        boolean result = productService.removeProductById(id);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

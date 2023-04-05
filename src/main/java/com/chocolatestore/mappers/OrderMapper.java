@@ -26,6 +26,7 @@ public class OrderMapper {
         odr.setCreated(o.getCreated());
         odr.setChanged(o.getChanged());
         odr.setCancelled(o.isCancelled());
+        odr.setCollected(o.isCollected());
         odr.setFinished(o.isFinished());
         return odr;
     }

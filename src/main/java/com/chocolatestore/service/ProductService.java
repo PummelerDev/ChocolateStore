@@ -58,12 +58,8 @@ public class ProductService {
         return productRepository.saveAndFlushCustom(id, intoDB);
     }
 
-    public boolean deleteProductById(long id) {
+    public boolean removeProductById(long id) {
         productRepository.deleteById(id);
         return !productRepository.existsById(id);
-    }
-
-    public void deleteProduct(Product product) {
-        productRepository.delete(product);
     }
 }

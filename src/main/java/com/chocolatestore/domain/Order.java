@@ -42,6 +42,9 @@ public class Order {
     @Column(name = "cancelled")
     private boolean cancelled;
 
+    @Column(name = "collected")
+    private boolean collected;
+
     @Column(name = "finished")
     private boolean finished;
 
@@ -56,6 +59,7 @@ public class Order {
                 ", created=" + created +
                 ", changed=" + changed +
                 ", cancelled=" + cancelled +
+                ", collected=" + collected +
                 ", finished=" + finished +
                 '}';
     }
@@ -65,12 +69,12 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return id == order.id && orderNumber == order.orderNumber && quantity == order.quantity && cancelled == order.cancelled && finished == order.finished && Objects.equals(product, order.product) && Objects.equals(customer, order.customer) && Objects.equals(created, order.created) && Objects.equals(changed, order.changed);
+        return id == order.id && orderNumber == order.orderNumber && quantity == order.quantity && cancelled == order.cancelled && collected == order.collected && finished == order.finished && Objects.equals(product, order.product) && Objects.equals(customer, order.customer) && Objects.equals(created, order.created) && Objects.equals(changed, order.changed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, orderNumber, product, customer, quantity, created, changed, cancelled, finished);
+        return Objects.hash(id, orderNumber, product, customer, quantity, created, changed, cancelled, collected, finished);
     }
 
     public long getId() {
@@ -137,6 +141,14 @@ public class Order {
         this.cancelled = cancelled;
     }
 
+    public boolean isCollected() {
+        return collected;
+    }
+
+    public void setCollected(boolean collected) {
+        this.collected = collected;
+    }
+
     public boolean isFinished() {
         return finished;
     }
@@ -148,7 +160,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(long id, long orderNumber, Product product, Customer customer, int quantity, Timestamp created, Timestamp changed, boolean cancelled, boolean finished) {
+    public Order(long id, long orderNumber, Product product, Customer customer, int quantity, Timestamp created, Timestamp changed, boolean cancelled, boolean collected, boolean finished) {
         this.id = id;
         this.orderNumber = orderNumber;
         this.product = product;
@@ -157,6 +169,7 @@ public class Order {
         this.created = created;
         this.changed = changed;
         this.cancelled = cancelled;
+        this.collected = collected;
         this.finished = finished;
     }
 }
