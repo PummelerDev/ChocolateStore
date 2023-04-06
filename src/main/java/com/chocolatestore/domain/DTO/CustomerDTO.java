@@ -1,23 +1,25 @@
 package com.chocolatestore.domain.DTO;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class CustomerDTO {
+    @NotNull
     private String firstName;
 
+    @NotNull
     private String lastName;
 
+    @NotNull
     private String address;
 
+    @NotNull
     private String phone;
 
+    @NotNull
     @Email(regexp = "^([a-zA-Z0-9]+(\\.|\\-|_)?[a-zA-Z0-9]+)+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]{2,4}$")
     private String email;
-
-    private String login;
-
-    private String password;
 
     @Override
     public String toString() {
@@ -27,8 +29,6 @@ public class CustomerDTO {
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 
@@ -37,12 +37,12 @@ public class CustomerDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CustomerDTO that = (CustomerDTO) o;
-        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(address, that.address) && Objects.equals(phone, that.phone) && Objects.equals(email, that.email) && Objects.equals(login, that.login) && Objects.equals(password, that.password);
+        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(address, that.address) && Objects.equals(phone, that.phone) && Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, address, phone, email, login, password);
+        return Objects.hash(firstName, lastName, address, phone, email);
     }
 
     public String getFirstName() {
@@ -85,22 +85,6 @@ public class CustomerDTO {
         this.email = email;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public CustomerDTO() {
     }
 
@@ -110,7 +94,5 @@ public class CustomerDTO {
         this.address = address;
         this.phone = phone;
         this.email = email;
-        this.login = login;
-        this.password = password;
     }
 }

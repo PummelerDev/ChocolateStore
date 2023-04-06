@@ -2,6 +2,7 @@ package com.chocolatestore.service;
 
 import com.chocolatestore.domain.DTO.OrderDTORequest;
 import com.chocolatestore.domain.DTO.OrderDTOResponse;
+import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
 import com.chocolatestore.mappers.OrderMapper;
 import com.chocolatestore.repository.OrderRepository;
@@ -51,7 +52,7 @@ public class OrderService {
     }
 
     public boolean cancelOrderByNumberAndId(long orderNumber, long id) {
-       return orderRepository.cancelOrderByNumberAndId(orderNumber, id);
+        return orderRepository.cancelOrderByNumberAndId(orderNumber, id);
     }
 
     public boolean cancelAllOrdersByNumber(long orderNumber) {
@@ -64,6 +65,10 @@ public class OrderService {
 
     public boolean finishOrderByNumber(long orderNumber) {
         return orderRepository.finishOrderByNumber(orderNumber);
+    }
+
+    public OrderDTOResponseByNumber getOrderByNumber(long orderNumber) {
+        return orderMapper.mapOrderToOrderDTOResponseByNumber(orderRepository.findAllByOrderNumber(orderNumber));
     }
 
     private long createOrderId() {

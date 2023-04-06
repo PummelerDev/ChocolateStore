@@ -2,6 +2,7 @@ package com.chocolatestore.mappers;
 
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
+import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,8 +14,6 @@ public class CustomerMapper {
         c.setAddress(cd.getAddress());
         c.setPhone(cd.getPhone());
         c.setEmail(cd.getEmail());
-        c.setLogin(cd.getLogin());
-        c.setPassword(cd.getPassword());
         return c;
     }
 
@@ -25,8 +24,13 @@ public class CustomerMapper {
         cd.setAddress(c.getAddress());
         cd.setPhone(c.getPhone());
         cd.setEmail(c.getEmail());
-        cd.setLogin(c.getLogin());
-        cd.setPassword(c.getPassword());
         return cd;
+    }
+
+    public CustomerDTOLoginPassword mapCustomerToCustomerDTOLoginPassword(Customer c) {
+        CustomerDTOLoginPassword cdlp = new CustomerDTOLoginPassword();
+        cdlp.setLogin(c.getLogin());
+        cdlp.setPassword(c.getPassword());
+        return cdlp;
     }
 }

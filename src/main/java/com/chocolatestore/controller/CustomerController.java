@@ -2,6 +2,7 @@ package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
+import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
 import com.chocolatestore.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,6 +70,18 @@ public class CustomerController {
     @DeleteMapping("/{id}/remove")
     public ResponseEntity<HttpStatus> removeCustomerById(@PathVariable long id) {
         boolean result = customerService.removeCustomerById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @GetMapping("/login/{id}")
+    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@PathVariable Long id){
+        CustomerDTOLoginPassword cdlp =customerService.getLoginAndPassword(id);
+        return new ResponseEntity<>(cdlp, !cdlp.getLogin().isBlank() ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @PutMapping("/login/{id}")
+    public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@PathVariable Long id, @RequestBody CustomerDTOLoginPassword cdlp){
+        boolean result =customerService.updateLoginAndPassword(id, cdlp);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

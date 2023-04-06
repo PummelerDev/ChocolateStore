@@ -2,6 +2,7 @@ package com.chocolatestore.service;
 
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
+import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
 import com.chocolatestore.mappers.CustomerMapper;
 import com.chocolatestore.repository.CustomerRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -41,17 +42,15 @@ public class CustomerService {
     }
 
     @Transactional // TODO: 03.04.2023 transactional?
-    public Customer updateById(long id,CustomerDTO cd) {
+    public Customer updateById(long id, CustomerDTO cd) {
         Customer fromDB = customerRepository.findById(id).get();
         Customer intoDB = new Customer();
         intoDB.setId(id);
-        intoDB.setFirstName(StringUtils.isBlank(cd.getFirstName())? fromDB.getFirstName() : cd.getFirstName());
-        intoDB.setLastName(StringUtils.isBlank(cd.getLastName())? fromDB.getLastName() : cd.getLastName());
-        intoDB.setAddress(StringUtils.isBlank(cd.getAddress())? fromDB.getAddress() : cd.getAddress());
-        intoDB.setPhone(StringUtils.isBlank(cd.getPhone())? fromDB.getPhone() : cd.getPhone());
-        intoDB.setEmail(StringUtils.isBlank(cd.getEmail())? fromDB.getEmail() : cd.getEmail());
-        intoDB.setLogin(StringUtils.isBlank(cd.getLogin())? fromDB.getLogin() : cd.getLogin());
-        intoDB.setPassword(StringUtils.isBlank(cd.getPassword())? fromDB.getPassword() : cd.getPassword());
+        intoDB.setFirstName(StringUtils.isBlank(cd.getFirstName()) ? fromDB.getFirstName() : cd.getFirstName());
+        intoDB.setLastName(StringUtils.isBlank(cd.getLastName()) ? fromDB.getLastName() : cd.getLastName());
+        intoDB.setAddress(StringUtils.isBlank(cd.getAddress()) ? fromDB.getAddress() : cd.getAddress());
+        intoDB.setPhone(StringUtils.isBlank(cd.getPhone()) ? fromDB.getPhone() : cd.getPhone());
+        intoDB.setEmail(StringUtils.isBlank(cd.getEmail()) ? fromDB.getEmail() : cd.getEmail());
         return customerRepository.saveAndFlush(intoDB);
     }
 
@@ -61,6 +60,14 @@ public class CustomerService {
 
     public boolean restoreCustomerById(long id) {
         return customerRepository.restoreByIdCustom(id);
+    }
+
+    public CustomerDTOLoginPassword getLoginAndPassword(long id) {
+        return customerMapper.mapCustomerToCustomerDTOLoginPassword(customerRepository.findById(id).get());
+    }
+
+    public boolean updateLoginAndPassword(long id, CustomerDTOLoginPassword cdlp) {
+        return customerRepository.updateLoginPassword(id, cdlp);
     }
 
     public boolean removeCustomerById(long id) {

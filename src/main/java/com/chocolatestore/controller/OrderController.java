@@ -2,6 +2,7 @@ package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.DTO.OrderDTORequest;
 import com.chocolatestore.domain.DTO.OrderDTOResponse;
+import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
 import com.chocolatestore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class OrderController {
         return new ResponseEntity<>(o != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") // TODO: 06.04.2023 add id! как выбрать какой-то конкретный заказ??
     public ResponseEntity<HttpStatus> updateOrderById(@PathVariable long id, @RequestBody OrderDTORequest o) {
         orderService.updateOrderById(id, o);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -74,5 +75,11 @@ public class OrderController {
     public ResponseEntity<HttpStatus> finishOrderByNumber(@PathVariable long orderNumber) {
         boolean result = orderService.finishOrderByNumber(orderNumber);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @GetMapping("/number/{number}")
+    public ResponseEntity<OrderDTOResponseByNumber> getOrderByNumber(@PathVariable long number) {
+        OrderDTOResponseByNumber odrn = orderService.getOrderByNumber(number);
+        return new ResponseEntity<>(odrn, odrn.getOrderNumber() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 }
