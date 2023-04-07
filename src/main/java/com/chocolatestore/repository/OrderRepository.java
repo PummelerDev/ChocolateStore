@@ -1,7 +1,7 @@
 package com.chocolatestore.repository;
 
-import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
-import com.chocolatestore.domain.DTO.OrderDTORequest;
+import com.chocolatestore.domain.DTO.OrderDTORequestAddOrUpdate;
+import com.chocolatestore.domain.DTO.OrderDTORequestCreate;
 import com.chocolatestore.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,10 +14,13 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(nativeQuery = true, value = "insert into orders values(default, :#{#orderNumber}, :#{#order.productId}, :#{#order.customerId}, :#{#order.quantity}, default, default, default, default) returning *")
-    Order save(@Param("order") OrderDTORequest order, @Param("orderNumber") long orderNumber);
+    Order saveCustom(@Param("order") OrderDTORequestCreate order, @Param("orderNumber") long orderNumber);
+
+    @Query(nativeQuery = true, value = "insert into orders values(default, :#{#orderNumber}, :#{#order.productId}, (select distinct customer_id from orders where order_number =:#{#orderNumber}), :#{#order.quantity}, default, default, default, default) returning *")
+    Order addByOrderNumber(@Param("order") OrderDTORequestAddOrUpdate order, @Param("orderNumber") long orderNumber);
 
     @Query(nativeQuery = true, value = "update orders set product_id =:#{#order.productId}, quantity =:#{#order.quantity} where id =:#{#id} returning *")
-    Order saveAndFlushCustom(@Param("id") long id, @Param("order") OrderDTORequest odr);
+    Order saveAndFlushCustom(@Param("id") long id, @Param("order") OrderDTORequestAddOrUpdate odr);
 
     @Query(nativeQuery = true, value = "update orders set cancelled = true, changed = default where order_number=:orderNumber and id=:id returning cancelled")
     boolean cancelOrderByNumberAndId(long orderNumber, long id);

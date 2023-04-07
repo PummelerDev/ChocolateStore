@@ -21,16 +21,16 @@ public class ProductMapper {
         return pdr;
     }
 
-    public ProductDTOResponseByNumber mapProductToProductDTOResponseByNumber(Product p, Order o) {
+    public ProductDTOResponseByNumber mapProductFromOrderToProductDTOResponseByNumber(Order o) {
         ProductDTOResponseByNumber pdrn = new ProductDTOResponseByNumber();
         pdrn.setKey(o.getId());
-        pdrn.setKind(p.getKind());
-        pdrn.setTopping(p.getTopping());
-        pdrn.setManufacturerName(p.getManufacturer().getName());
-        pdrn.setName(p.getName());
-        pdrn.setDescription(p.getDescription());
-        pdrn.setWeight(p.getWeight());
-        pdrn.setPrice(p.getPrice());
+        pdrn.setKind(o.getProduct().getKind());
+        pdrn.setTopping(o.getProduct().getTopping());
+        pdrn.setManufacturerName(o.getProduct().getManufacturer().getName());
+        pdrn.setName(o.getProduct().getName());
+        pdrn.setDescription(o.getProduct().getDescription());
+        pdrn.setWeight(o.getProduct().getWeight());
+        pdrn.setPrice(o.getProduct().getPrice());
         pdrn.setQuantity(o.getQuantity());
         return pdrn;
     }

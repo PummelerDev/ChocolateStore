@@ -61,7 +61,7 @@ public class CustomerController {
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @DeleteMapping("/{id}/restore")
+    @PostMapping("/{id}/restore")
     public ResponseEntity<HttpStatus> restoreCustomerById(@PathVariable long id) {
         boolean result = customerService.restoreCustomerById(id);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);

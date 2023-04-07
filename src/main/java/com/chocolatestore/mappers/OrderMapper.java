@@ -50,7 +50,7 @@ public class OrderMapper {
         odrn.setCustomer(customerMapper.mapCustomerToCustomerDTO(ol.get(0).getCustomer()));
         odrn.setProducts(ol
                 .stream()
-                .map(order -> productMapper.mapProductToProductDTOResponseByNumber(order.getProduct(), order))
+                .map(productMapper::mapProductFromOrderToProductDTOResponseByNumber)
                 .collect(Collectors.toList())
         );
         odrn.setTotalPrice(odrn

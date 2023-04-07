@@ -1,6 +1,7 @@
 package com.chocolatestore.service;
 
-import com.chocolatestore.domain.DTO.OrderDTORequest;
+import com.chocolatestore.domain.DTO.OrderDTORequestAddOrUpdate;
+import com.chocolatestore.domain.DTO.OrderDTORequestCreate;
 import com.chocolatestore.domain.DTO.OrderDTOResponse;
 import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
@@ -38,11 +39,14 @@ public class OrderService {
         return orderMapper.mapOrderToOrderDTOResponse(orderRepository.findById(id).get());
     }
 
-    public Order createOrder(OrderDTORequest o) {
-        return orderRepository.save(o, createOrderId());
+    public Order createOrder(OrderDTORequestCreate o) {
+        return orderRepository.saveCustom(o, createOrderId());
+    }
+    public Order addToOrderByOrderNumber(Long orderNumber, OrderDTORequestAddOrUpdate o) {
+        return orderRepository.addByOrderNumber(o, orderNumber);
     }
 
-    public Order updateOrderById(long id, OrderDTORequest o) {
+    public Order updateOrderById(long id, OrderDTORequestAddOrUpdate o) {
         return orderRepository.saveAndFlushCustom(id, o);
     }
 

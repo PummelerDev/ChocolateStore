@@ -1,6 +1,7 @@
 package com.chocolatestore.controller;
 
-import com.chocolatestore.domain.DTO.OrderDTORequest;
+import com.chocolatestore.domain.DTO.OrderDTORequestAddOrUpdate;
+import com.chocolatestore.domain.DTO.OrderDTORequestCreate;
 import com.chocolatestore.domain.DTO.OrderDTOResponse;
 import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
@@ -36,14 +37,23 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createOrder(@RequestBody OrderDTORequest odr) {
+    public ResponseEntity<Long> createOrder(@RequestBody OrderDTORequestCreate odr) {
         Order o = orderService.createOrder(odr);
-        return new ResponseEntity<>(o != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        if (o != null && o.getOrderNumber() >= 0) {
+            return new ResponseEntity<>(o.getOrderNumber(), HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
-    @PutMapping("/{id}") // TODO: 06.04.2023 add id! как выбрать какой-то конкретный заказ??
-    public ResponseEntity<HttpStatus> updateOrderById(@PathVariable long id, @RequestBody OrderDTORequest o) {
-        orderService.updateOrderById(id, o);
+    @PostMapping("/add/{orderNumber}")
+    public ResponseEntity<HttpStatus> addToOrderByOrderNumber(@PathVariable long orderNumber, @RequestBody OrderDTORequestAddOrUpdate odrau) {
+        Order o = orderService.addToOrderByOrderNumber(orderNumber, odrau);
+        return new ResponseEntity<>(o != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+    }
+
+    @PutMapping("/{key}")
+    public ResponseEntity<HttpStatus> updateOrderByKey(@PathVariable long key, @RequestBody OrderDTORequestAddOrUpdate odrau) {
+        orderService.updateOrderById(key, odrau);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
