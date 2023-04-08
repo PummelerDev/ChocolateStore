@@ -25,13 +25,14 @@ public class SecurityConfig {
     }
 
     private static final String[] AUTH_WHITELIST = {
-
+            "/"
     };
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().antMatchers(AUTH_WHITELIST);
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
