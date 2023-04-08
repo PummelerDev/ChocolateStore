@@ -1,10 +1,5 @@
 package com.chocolatestore.domain.DTO;
 
-import com.chocolatestore.domain.Customer;
-import com.chocolatestore.domain.Product;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 

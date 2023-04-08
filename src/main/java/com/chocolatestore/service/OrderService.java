@@ -7,9 +7,11 @@ import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
 import com.chocolatestore.mappers.OrderMapper;
 import com.chocolatestore.repository.OrderRepository;
+import com.chocolatestore.utils.PdfCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ public class OrderService {
     public Order createOrder(OrderDTORequestCreate o) {
         return orderRepository.saveCustom(o, createOrderId());
     }
+
     public Order addToOrderByOrderNumber(Long orderNumber, OrderDTORequestAddOrUpdate o) {
         return orderRepository.addByOrderNumber(o, orderNumber);
     }
@@ -73,6 +76,11 @@ public class OrderService {
 
     public OrderDTOResponseByNumber getOrderByNumber(long orderNumber) {
         return orderMapper.mapOrderToOrderDTOResponseByNumber(orderRepository.findAllByOrderNumber(orderNumber));
+    }
+
+    public File createPdfFromOrderDtoResponse(Long number) {
+        PdfCreator pdfCreator = new PdfCreator();
+        return pdfCreator.createPdfFromOrderDtoResponse(getOrderByNumber(number));
     }
 
     private long createOrderId() {

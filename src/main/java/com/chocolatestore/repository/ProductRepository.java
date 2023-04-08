@@ -1,6 +1,5 @@
 package com.chocolatestore.repository;
 
-import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.ProductDTORequest;
 import com.chocolatestore.domain.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

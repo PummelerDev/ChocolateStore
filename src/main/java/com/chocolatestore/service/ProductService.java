@@ -1,11 +1,10 @@
 package com.chocolatestore.service;
 
-import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.ProductDTOResponse;
 import com.chocolatestore.domain.DTO.ProductDTORequest;
-import com.chocolatestore.domain.Kind;
+import com.chocolatestore.utils.Kind;
 import com.chocolatestore.domain.Product;
-import com.chocolatestore.domain.Topping;
+import com.chocolatestore.utils.Topping;
 import com.chocolatestore.mappers.ProductMapper;
 import com.chocolatestore.repository.ProductRepository;
 import org.apache.commons.lang3.StringUtils;

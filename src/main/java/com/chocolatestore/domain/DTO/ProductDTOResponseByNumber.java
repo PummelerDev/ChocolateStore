@@ -1,7 +1,7 @@
 package com.chocolatestore.domain.DTO;
 
-import com.chocolatestore.domain.Kind;
-import com.chocolatestore.domain.Topping;
+import com.chocolatestore.utils.Kind;
+import com.chocolatestore.utils.Topping;
 
 import java.util.Objects;
 

@@ -3,11 +3,9 @@ package com.chocolatestore.mappers;
 import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.DTO.ProductDTOResponse;
 import com.chocolatestore.domain.Manufacturer;
-import com.chocolatestore.domain.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,13 +18,6 @@ public class ManufacturerMapper {
         this.productMapper = productMapper;
     }
 
-//    public Manufacturer mapManufacturerDTOToManufacturer(ManufacturerDTO md) {
-//        Manufacturer m = new Manufacturer();
-//        m.setName(md.getName());
-//        m.setProducts(md.getProducts());
-//        return m;
-//    }
-
     public ManufacturerDTO mapManufacturerToManufacturerDTO(Manufacturer m) {
         List<ProductDTOResponse> productList = m.getProducts()
                 .stream()
@@ -37,5 +28,4 @@ public class ManufacturerMapper {
         md.setProducts(productList);
         return md;
     }
-
 }

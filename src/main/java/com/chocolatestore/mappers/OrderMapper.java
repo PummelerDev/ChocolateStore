@@ -2,18 +2,12 @@ package com.chocolatestore.mappers;
 
 import com.chocolatestore.domain.DTO.OrderDTOResponse;
 import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
-import com.chocolatestore.domain.DTO.ProductDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
-import com.chocolatestore.domain.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.groupingBy;
 
 @Component
 public class OrderMapper {

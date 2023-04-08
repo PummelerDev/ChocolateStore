@@ -1,14 +1,20 @@
 package com.chocolatestore.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GenerationType;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
 
-//@Component
 @Entity
 @Table(name = "manufacturers")
 public class Manufacturer {
