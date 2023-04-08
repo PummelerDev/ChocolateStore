@@ -36,7 +36,6 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         token = ((HttpServletRequest) servletRequest).getHeader("Authorization");
-
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
             token = token.substring(7);
             if (jwtProvider.isValid(token)) {

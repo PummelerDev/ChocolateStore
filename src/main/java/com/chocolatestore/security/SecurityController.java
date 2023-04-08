@@ -31,7 +31,7 @@ public class SecurityController {
     public ResponseEntity<JwtResponse> auth(@RequestBody JwtAuthRequest jwtAuthRequest) {
         String result = securityService.getToken(jwtAuthRequest);
         if (!result.isBlank()) {
-            return new ResponseEntity<>(new JwtResponse(result), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new JwtResponse(result), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }

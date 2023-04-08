@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/registration", "/auth", "/swagger-ui/index.html").permitAll() //if basic auth, can use '/swagger-ui/index.html' for ADMIN role
+                .antMatchers("/product","/registration", "/auth", "/swagger-ui/index.html").permitAll() //if basic auth, can use '/swagger-ui/index.html' for ADMIN role
                 .antMatchers("/customer/**", "/manufacturer").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
