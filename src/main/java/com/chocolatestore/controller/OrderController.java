@@ -11,12 +11,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.io.File;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 @RestController
@@ -101,11 +106,10 @@ public class OrderController {
 
     @GetMapping("/number/{number}/pdf")
     public ResponseEntity<byte[]> getOrderPdfByOrderNumber(@PathVariable Long number) throws IOException {
-        File file = orderService.createPdfFromOrderDtoResponse(number);
-        if (!file.exists()) {
+        byte[] result = orderService.createPdfFromOrderDtoResponse(number);
+        if (result.length == 0) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        byte[] result = Files.readAllBytes(Path.of(file.toURI()));
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_PDF)

@@ -78,7 +78,7 @@ public class OrderService {
         return orderMapper.mapOrderToOrderDTOResponseByNumber(orderRepository.findAllByOrderNumber(orderNumber));
     }
 
-    public File createPdfFromOrderDtoResponse(Long number) {
+    public byte[] createPdfFromOrderDtoResponse(Long number) {
         PdfCreator pdfCreator = new PdfCreator();
         return pdfCreator.createPdfFromOrderDtoResponse(getOrderByNumber(number));
     }

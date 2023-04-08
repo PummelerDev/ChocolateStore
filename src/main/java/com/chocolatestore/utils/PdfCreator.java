@@ -20,13 +20,15 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class PdfCreator {
-    public File createPdfFromOrderDtoResponse(OrderDTOResponseByNumber orderDTOResponseByNumber) {
+    public byte[] createPdfFromOrderDtoResponse(OrderDTOResponseByNumber orderDTOResponseByNumber) {
         Document document = new Document();
-        byte[] result = new byte[0];
+        byte[] result =new byte[0];
         try {
-            PdfWriter instance = PdfWriter.getInstance(document, new FileOutputStream("order.pdf"));
+            PdfWriter instance = PdfWriter.getInstance(document, new FileOutputStream("order_" + orderDTOResponseByNumber.getOrderNumber() + ".pdf"));
             instance.setViewerPreferences(PdfWriter.PageModeUseOutlines);
             document.setPageSize(PageSize.A4);
             document.setMargins(15f, 15f, 24f, 20f);
@@ -102,9 +104,13 @@ public class PdfCreator {
 
             document.close();
             instance.close();
+            File file = new File("order_" + orderDTOResponseByNumber.getOrderNumber() + ".pdf");
+            result = Files.readAllBytes(Path.of(file.toURI()));
+            file.delete();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-        return new File("order.pdf");
     }
 }
