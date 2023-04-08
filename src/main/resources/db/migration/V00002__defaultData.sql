@@ -4,6 +4,9 @@ insert into customers values (default, 'Remus ', 'Lupin', 'Hogwarts', 'send me a
 
 insert into roles values (default, 3, 'ADMIN');
 
+insert into roles values (default, 1, 'ADMIN', default);
+insert into roles values (default, 3, 'ADMIN', default);
+
 insert into manufacturers values (default, 'Ritter Sport', default, default);
 insert into manufacturers values (default, 'Schogetten', default, default);
 

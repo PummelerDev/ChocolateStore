@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -73,5 +74,12 @@ public class CustomerService {
     public boolean removeCustomerById(long id) {
         customerRepository.deleteById(id);
         return !customerRepository.existsById(id);
+    }
+    public Optional<Customer> getCustomerByLogin(String login) {
+        return customerRepository.findCustomerByLogin(login);
+    }
+
+    public String getRole(long id) {
+        return customerRepository.getRole(id);
     }
 }
