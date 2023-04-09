@@ -3,14 +3,13 @@ package com.chocolatestore.security;
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.reqest.JwtAuthRequest;
 import com.chocolatestore.domain.reqest.RegistrationCustomer;
+import com.chocolatestore.exceptions.CustomerNotFoundException;
 import com.chocolatestore.repository.CustomerRepository;
 import com.chocolatestore.security.JWT.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class SecurityService {
@@ -27,8 +26,8 @@ public class SecurityService {
     }
 
     public String getToken(JwtAuthRequest jwtAuthRequest) {
-        Optional<Customer> customer = customerRepository.findCustomerByLogin(jwtAuthRequest.getLogin());
-        if (customer.isPresent() && passwordEncoder.matches(jwtAuthRequest.getPassword(), customer.get().getPassword())) {
+        Customer customer = customerRepository.findCustomerByLogin(jwtAuthRequest.getLogin()).orElseThrow(() -> new CustomerNotFoundException("Customer with login " + jwtAuthRequest.getLogin() + " not found!"));
+        if (passwordEncoder.matches(jwtAuthRequest.getPassword(), customer.getPassword())) {
             return jwtProvider.createJwtToken(jwtAuthRequest.getLogin());
         }
         return "";
