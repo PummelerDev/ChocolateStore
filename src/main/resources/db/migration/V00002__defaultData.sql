@@ -2,12 +2,9 @@ insert into customers values (default, 'Jack', 'Sparrow', 'Tortuga', 1234523, 'j
 insert into customers values (default, 'Gandalf', 'the Gray', 'Middle Earth', 'i will find you myself', 'gandalf.the_white_soon@wizard.mag', default, 'gandalflogin', '$2a$10$g/zo6HvkjEX/8cU20OwQWeI3ihNUWpDqgZFDcLInT5Ltp2DU9s40C', default, default);
 insert into customers values (default, 'Remus ', 'Lupin', 'Hogwarts', 'send me an owl', 'lupin.professor@were.wolf', default, 'remuslogin', '$2a$10$HUFxOg3FiHbTPA60Do3qverLfx22rTG11DBaDmyn4OMJCHfXSQYZ.', default, default);
 
-insert into roles values (default, 1, 'USER');
-insert into roles values (default, 2, 'USER');
+insert into roles values (default, 1, default);
+insert into roles values (default, 2, default);
 insert into roles values (default, 3, 'ADMIN');
-
-insert into roles values (default, 1, 'ADMIN', default);
-insert into roles values (default, 3, 'ADMIN', default);
 
 insert into manufacturers values (default, 'Ritter Sport', default, default);
 insert into manufacturers values (default, 'Schogetten', default, default);

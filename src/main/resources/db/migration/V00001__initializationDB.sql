@@ -1,7 +1,3 @@
-create sequence orders_id_seq1;
-
-alter sequence orders_id_seq1 owner to postgres;
-
 create table if not exists flyway_schema_history
 (
     installed_rank integer                 not null
@@ -23,6 +19,10 @@ alter table flyway_schema_history
 
 create index if not exists flyway_schema_history_s_idx
     on flyway_schema_history (success);
+
+create sequence orders_id_seq1;
+
+alter sequence orders_id_seq1 owner to postgres;
 
 create table if not exists manufacturers
 (
@@ -48,7 +48,9 @@ create table if not exists customers
     phone           varchar(50),
     email           varchar(250),
     purchase_amount double precision default 0,
-    login           varchar(200),
+    login           varchar(200)
+    constraint customers_pk2
+    unique,
     password        varchar(1000),
     created         timestamp        default now(),
     changed         timestamp        default now(),
@@ -112,7 +114,8 @@ create table if not exists roles
     id          bigserial,
     customer_id bigint
     constraint roles_customers_id_fk
-    references customers,
+    references customers
+    on update cascade on delete cascade,
     role       varchar(50)   default 'USER'::character varying not null,
     created     timestamp default now(),
     changed     timestamp default now()
