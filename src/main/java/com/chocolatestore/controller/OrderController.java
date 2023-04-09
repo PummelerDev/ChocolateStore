@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
@@ -36,29 +37,29 @@ public class OrderController {
         this.jwtProvider = jwtProvider;
     }
 
-    @GetMapping("/all") // TODO: 09.04.2023 all
+    @GetMapping("/all")
     public ResponseEntity<List<OrderDTOResponseByNumber>> getAllOrdersOfCurrentCustomer(@RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         List<OrderDTOResponseByNumber> orders = orderService.getAllOrdersByNumberOfCurrentCustomer(login);
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    @GetMapping("/all/admin") // TODO: 09.04.2023 admin
+    @GetMapping("/all/admin")
     public ResponseEntity<List<Order>> getAllOrders() {
         List<Order> orders = orderService.getAllOrders();
         return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
-    @GetMapping("/get/{id}") // TODO: 09.04.2023 admin
+    @GetMapping("/get/{id}")
     public ResponseEntity<OrderDTOResponse> getOrderById(@PathVariable long id) {
         OrderDTOResponse o = orderService.getOrderById(id);
-        return new ResponseEntity<>(o, o != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(o, HttpStatus.OK);
     }
 
-    @PostMapping("/create") // TODO: 09.04.2023 all
+    @PostMapping("/create")
     public ResponseEntity<Long> createOrder(@RequestBody @Valid OrderDTORequestCreate odr, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         Order o = orderService.createOrder(odr);
         if (o != null && o.getOrderNumber() >= 0) {
@@ -67,74 +68,74 @@ public class OrderController {
         return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/add/{orderNumber}") // TODO: 09.04.2023 all
+    @PostMapping("/add/{orderNumber}")
     public ResponseEntity<HttpStatus> addToOrderByOrderNumber(@PathVariable long orderNumber, @RequestBody @Valid OrderDTORequestAddOrUpdate odrau, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         Order o = orderService.addToOrderByOrderNumber(orderNumber, odrau);
         return new ResponseEntity<>(o != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
-    @PutMapping("/update/{key}") // TODO: 09.04.2023 all
+    @PutMapping("/update/{key}")
     public ResponseEntity<HttpStatus> updateOrderByKey(@PathVariable long key, @RequestBody @Valid OrderDTORequestAddOrUpdate odrau, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         Order o = orderService.updateOrderById(key, odrau);
         return new ResponseEntity<>(o != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
-    @DeleteMapping("/get/{id}/remove") // TODO: 09.04.2023 ??? CHECK IT! admin
+    @DeleteMapping("/get/{id}/remove")
     public ResponseEntity<HttpStatus> removeOrderById(@PathVariable long id) {
         boolean result = orderService.removeOrderById(id);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/cancel/{orderNumber}/{id}") // TODO: 09.04.2023 all  CHECK IT id???
+    @PostMapping("/cancel/{orderNumber}/{id}")
     public ResponseEntity<HttpStatus> cancelOrderByNumberAndId(@PathVariable long orderNumber, @PathVariable long id) {
         boolean result = orderService.cancelOrderByNumberAndId(orderNumber, id);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/cancel/{orderNumber}") // TODO: 09.04.2023 all
+    @PostMapping("/cancel/{orderNumber}")
     public ResponseEntity<HttpStatus> cancelAllOrdersByNumber(@PathVariable long orderNumber) {
         boolean result = orderService.cancelAllOrdersByNumber(orderNumber);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/collect/{orderNumber}") // TODO: 09.04.2023 all
+    @PostMapping("/collect/{orderNumber}")
     public ResponseEntity<HttpStatus> collectOrderByNumber(@PathVariable long orderNumber) {
         boolean result = orderService.collectOrderByNumber(orderNumber);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/finish/{orderNumber}") // TODO: 09.04.2023 admin
+    @PostMapping("/finish/{orderNumber}")
     public ResponseEntity<HttpStatus> finishOrderByNumber(@PathVariable long orderNumber) {
         boolean result = orderService.finishOrderByNumber(orderNumber);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @GetMapping("/number/{number}") // TODO: 09.04.2023 all
+    @GetMapping("/number/{number}")
     public ResponseEntity<OrderDTOResponseByNumber> getOrderByNumberCurrentCustomer(@PathVariable long number, @RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
-        if (orderService.toCheckCustomerAndOrderNumber(number, login)) {
+        if (!orderService.toCheckCustomerAndOrderNumber(number, login)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         OrderDTOResponseByNumber odrn = orderService.getOrderDTOResponseByNumber(number);
-        return new ResponseEntity<>(odrn, odrn.getOrderNumber() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(odrn, HttpStatus.OK);
     }
 
-    @GetMapping("/number/{number}/admin") // TODO: 09.04.2023 all
+    @GetMapping("/number/{number}/admin")
     public ResponseEntity<OrderDTOResponseByNumber> getOrderByNumber(@PathVariable long number) {
         OrderDTOResponseByNumber odrn = orderService.getOrderDTOResponseByNumber(number);
-        return new ResponseEntity<>(odrn, odrn.getOrderNumber() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(odrn, HttpStatus.OK);
     }
 
-    @GetMapping("/number/{number}/pdf") // TODO: 09.04.2023 all
+    @GetMapping("/number/{number}/pdf")
     public ResponseEntity<byte[]> getOrderPdfByOrderNumberForCurrentCustomer(@PathVariable Long number, @RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
-        if (orderService.toCheckCustomerAndOrderNumber(number, login)) {
+        if (!orderService.toCheckCustomerAndOrderNumber(number, login)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         byte[] result = orderService.createPdfFromOrderDtoResponse(number);
@@ -148,7 +149,7 @@ public class OrderController {
                 .body(result);
     }
 
-    @GetMapping("/number/{number}/pdf/admin") // TODO: 09.04.2023 admin
+    @GetMapping("/number/{number}/pdf/admin")
     public ResponseEntity<byte[]> getOrderPdfByOrderNumber(@PathVariable Long number) {
         byte[] result = orderService.createPdfFromOrderDtoResponse(number);
         if (result.length == 0) {

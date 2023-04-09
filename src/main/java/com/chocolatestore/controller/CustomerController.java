@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
@@ -41,23 +42,23 @@ public class CustomerController {
         return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable long id) {
         CustomerDTO cd = customerService.getCustomerById(id);
-        return new ResponseEntity<>(cd, cd != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(cd, HttpStatus.OK);
     }
 
     @GetMapping("/current")
     public ResponseEntity<CustomerDTO> getCurrentCustomerById(@RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         CustomerDTO cd = customerService.getCustomerDTOByLogin(login);
-        return new ResponseEntity<>(cd, cd != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(cd, HttpStatus.OK);
     }
 
     @PutMapping("/update")
     public ResponseEntity<HttpStatus> updateCustomerById(@RequestHeader String authorization, @RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         boolean result = customerService.updateById(login, cd);
@@ -84,19 +85,19 @@ public class CustomerController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@RequestHeader String authorization){
+    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
-        CustomerDTOLoginPassword cdlp =customerService.getLoginAndPassword(login);
-        return new ResponseEntity<>(cdlp, !cdlp.getLogin().isBlank() ? HttpStatus.OK : HttpStatus.CONFLICT);
+        CustomerDTOLoginPassword cdlp = customerService.getLoginAndPassword(login);
+        return new ResponseEntity<>(cdlp, HttpStatus.OK);
     }
 
     @PutMapping("/update/login/")
-    public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@RequestHeader String authorization, @RequestBody @Valid CustomerDTOLoginPassword cdlp, BindingResult bindingResult){
+    public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@RequestHeader String authorization, @RequestBody @Valid CustomerDTOLoginPassword cdlp, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
-        boolean result =customerService.updateLoginAndPassword(login, cdlp);
+        boolean result = customerService.updateLoginAndPassword(login, cdlp);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

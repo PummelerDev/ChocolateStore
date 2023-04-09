@@ -2,6 +2,7 @@ package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
+import com.chocolatestore.exceptions.ManufacturerNotFoundException;
 import com.chocolatestore.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,10 +44,10 @@ public class ManufacturerController {
     @GetMapping("/get/{id}")
     public ResponseEntity<Manufacturer> getManufacturerById(@PathVariable long id) {
         Manufacturer m = manufacturerService.getManufacturerById(id);
-        return new ResponseEntity<>(m, m != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 
-    @PostMapping ("/create")
+    @PostMapping("/create")
     public ResponseEntity<HttpStatus> createManufacturer(@RequestParam String manufacturerName) {
         Manufacturer m = manufacturerService.createManufacturer(manufacturerName);
         return new ResponseEntity<>(m != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
@@ -55,7 +56,7 @@ public class ManufacturerController {
     @PutMapping("/update/{id}")
     public ResponseEntity<HttpStatus> updateManufacturerById(@PathVariable long id, @RequestParam String manufacturerName) {
         Manufacturer m = manufacturerService.updateManufacturer(id, manufacturerName);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(m != null ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/get/{id}/remove")

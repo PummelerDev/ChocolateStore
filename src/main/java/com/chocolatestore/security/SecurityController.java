@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.net.http.HttpResponse;
+import javax.validation.ValidationException;
 
 @RestController
 public class SecurityController {
 
-    SecurityService securityService;
+    private final SecurityService securityService;
 
     @Autowired
     public SecurityController(SecurityService securityService) {
@@ -25,9 +25,9 @@ public class SecurityController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<HttpResponse> registrationUser(@RequestBody @Valid RegistrationCustomer registrationCustomer, BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> registrationUser(@RequestBody @Valid RegistrationCustomer registrationCustomer, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         return new ResponseEntity<>(securityService.registration(registrationCustomer) ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
@@ -35,7 +35,7 @@ public class SecurityController {
     @PostMapping("/auth")
     public ResponseEntity<JwtResponse> auth(@RequestBody @Valid JwtAuthRequest jwtAuthRequest, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         String result = securityService.getToken(jwtAuthRequest);
         if (!result.isBlank()) {

@@ -3,6 +3,7 @@ package com.chocolatestore.service;
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
 import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
+import com.chocolatestore.exceptions.CustomerNotFoundException;
 import com.chocolatestore.mappers.CustomerMapper;
 import com.chocolatestore.repository.CustomerRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -25,19 +26,19 @@ public class CustomerService {
     }
 
     public ArrayList<Customer> getAllCustomers() {
-        return (ArrayList<Customer>) customerRepository.findAll();
+        ArrayList<Customer> customers = (ArrayList<Customer>) customerRepository.findAll();
+        if (customers.isEmpty()){
+            throw new CustomerNotFoundException("Customers not found!");
+        }
+        return customers;
     }
 
     public CustomerDTO getCustomerById(long id) {
-        return customerMapper.mapCustomerToCustomerDTO(customerRepository.findById(id).get());
+        return customerMapper.mapCustomerToCustomerDTO(customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer with id " + id + " not found!")));
     }
 
     public CustomerDTO getCustomerDTOByLogin(String login) {
-        return customerMapper.mapCustomerToCustomerDTO(customerRepository.findCustomerByLogin(login).get());
-    }
-
-    public Customer createCustomer(CustomerDTO cd) {
-        return customerRepository.save(customerMapper.mapCustomerDTOToCustomer(cd));
+        return customerMapper.mapCustomerToCustomerDTO(customerRepository.findCustomerByLogin(login).orElseThrow(() -> new CustomerNotFoundException("Customer with login " + login + " not found!")));
     }
 
     public Boolean updateById(String login, CustomerDTO cd) {
@@ -62,7 +63,7 @@ public class CustomerService {
     }
 
     public CustomerDTOLoginPassword getLoginAndPassword(String login) {
-        return customerMapper.mapCustomerToCustomerDTOLoginPassword(customerRepository.findCustomerByLogin(login).get());
+        return customerMapper.mapCustomerToCustomerDTOLoginPassword(customerRepository.findCustomerByLogin(login).orElseThrow(() -> new CustomerNotFoundException("Customer with login " + login + " not found!")));
     }
 
     public boolean updateLoginAndPassword(String login, CustomerDTOLoginPassword cdlp) {
@@ -74,8 +75,8 @@ public class CustomerService {
         return !customerRepository.existsById(id);
     }
 
-    public Optional<Customer> getCustomerByLogin(String login) {
-        return customerRepository.findCustomerByLogin(login);
+    public Customer getCustomerByLogin(String login) {
+        return customerRepository.findCustomerByLogin(login).orElseThrow(() -> new CustomerNotFoundException("Customer with login " + login + " not found!"));
     }
 
     public String getRole(long id) {

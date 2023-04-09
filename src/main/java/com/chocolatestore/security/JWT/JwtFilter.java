@@ -40,12 +40,12 @@ public class JwtFilter extends GenericFilterBean {
             token = token.substring(7);
             if (jwtProvider.isValid(token)) {
                 customerLogin = jwtProvider.getLoginFromJwt(token);
-                Optional<Customer> customer = customerService.getCustomerByLogin(customerLogin);
-                if (customer.isPresent() & !customer.get().isDeleted()) {
+                Customer customer = customerService.getCustomerByLogin(customerLogin);
+                if (!customer.isDeleted()) {
                     UserDetails userDetails = User
-                            .withUsername(customer.get().getLogin())
-                            .password(customer.get().getPassword())
-                            .roles(customerService.getRole(customer.get().getId()))
+                            .withUsername(customer.getLogin())
+                            .password(customer.getPassword())
+                            .roles(customerService.getRole(customer.getId()))
                             .build();
                     UsernamePasswordAuthenticationToken userAuth =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

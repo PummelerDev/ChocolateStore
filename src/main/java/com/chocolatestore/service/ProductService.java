@@ -2,6 +2,7 @@ package com.chocolatestore.service;
 
 import com.chocolatestore.domain.DTO.ProductDTOResponse;
 import com.chocolatestore.domain.DTO.ProductDTORequest;
+import com.chocolatestore.exceptions.ProductNotFoundException;
 import com.chocolatestore.utils.Kind;
 import com.chocolatestore.domain.Product;
 import com.chocolatestore.utils.Topping;
@@ -27,24 +28,29 @@ public class ProductService {
     }
 
     public ArrayList<ProductDTOResponse> getAllProducts() {
-        return (ArrayList<ProductDTOResponse>) productRepository
-                .findAll()
+        ArrayList<Product> products = (ArrayList<Product>) productRepository
+                .findAll();
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("Products not found!");
+        }
+        return (ArrayList<ProductDTOResponse>) products
                 .stream()
                 .map(productMapper::mapProductToProductDTOResponse)
                 .collect(Collectors.toList());
     }
 
     public ArrayList<Product> getAllProductForAdmin() {
-        return (ArrayList<Product>) productRepository.findAll();
+        ArrayList<Product> products = (ArrayList<Product>) productRepository.findAll();
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("Products not found!");
+        }
+        return products;
     }
 
-
-    // TODO: 31.03.2023 productRepository returns optional. need to rewrite it.
     public ProductDTOResponse getProductById(long id) {
-        return productMapper.mapProductToProductDTOResponse(productRepository.findById(id).get());
+        return productMapper.mapProductToProductDTOResponse(productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id " + id + "not found!")));
     }
 
-    // TODO: 04.04.2023 it's working?
     public Product createProduct(ProductDTORequest pdr) {
         return productRepository.save(pdr);
     }

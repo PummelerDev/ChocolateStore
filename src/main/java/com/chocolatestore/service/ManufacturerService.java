@@ -2,6 +2,7 @@ package com.chocolatestore.service;
 
 import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
+import com.chocolatestore.exceptions.ManufacturerNotFoundException;
 import com.chocolatestore.mappers.ManufacturerMapper;
 import com.chocolatestore.repository.ManufacturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +24,25 @@ public class ManufacturerService {
     }
 
     public ArrayList<ManufacturerDTO> getAllManufacturers() {
-        return (ArrayList<ManufacturerDTO>) manufacturerRepository
-                .findAll()
-                .stream()
+        ArrayList<Manufacturer> manufacturers = (ArrayList<Manufacturer>) manufacturerRepository.findAll();
+        if (manufacturers.isEmpty()) {
+            throw new ManufacturerNotFoundException("Manufacturers not found!");
+        }
+        return (ArrayList<ManufacturerDTO>) manufacturers.stream()
                 .map(manufacturerMapper::mapManufacturerToManufacturerDTO)
                 .collect(Collectors.toList());
     }
+
     public ArrayList<Manufacturer> getAllManufacturersForAdmin() {
-        return (ArrayList<Manufacturer>) manufacturerRepository.findAll();
+        ArrayList<Manufacturer> md = (ArrayList<Manufacturer>) manufacturerRepository.findAll();
+        if (md.isEmpty()) {
+            throw new ManufacturerNotFoundException("Manufacturers not found!");
+        }
+        return md;
     }
 
     public Manufacturer getManufacturerById(long id) {
-        return manufacturerRepository.findById(id).get();
+        return manufacturerRepository.findById(id).orElseThrow(() -> new ManufacturerNotFoundException("Manufacturer with id " + id + " not found!"));
     }
 
     public Manufacturer createManufacturer(String manufacturerName) {
@@ -47,7 +55,7 @@ public class ManufacturerService {
         Manufacturer fromDB = manufacturerRepository.findById(id).get();
         Manufacturer intoDB = new Manufacturer();
         intoDB.setId(id);
-        intoDB.setName(manufacturerName.isBlank()? fromDB.getName() : manufacturerName);
+        intoDB.setName(manufacturerName.isBlank() ? fromDB.getName() : manufacturerName);
         return manufacturerRepository.saveAndFlush(intoDB);
     }
 

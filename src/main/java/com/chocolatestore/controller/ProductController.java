@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
@@ -47,7 +48,7 @@ public class ProductController {
     @GetMapping("/get/{id}")
     public ResponseEntity<ProductDTOResponse> getProductById(@PathVariable long id) {
         ProductDTOResponse pdr = productService.getProductById(id);
-        return new ResponseEntity<>(pdr, pdr != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+        return new ResponseEntity<>(pdr, HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -62,7 +63,7 @@ public class ProductController {
     @PutMapping("/update/{id}")
     public ResponseEntity<HttpStatus> updateProductById(@PathVariable long id, @RequestBody @Valid ProductDTORequest pdr, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new ValidationException(bindingResult.toString());
         }
         Product p = productService.updateProductById(id, pdr);
         return new ResponseEntity<>(p != null ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);

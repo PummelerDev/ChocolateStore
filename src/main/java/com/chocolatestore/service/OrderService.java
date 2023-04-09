@@ -5,6 +5,7 @@ import com.chocolatestore.domain.DTO.OrderDTORequestCreate;
 import com.chocolatestore.domain.DTO.OrderDTOResponse;
 import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
+import com.chocolatestore.exceptions.OrderNotFoundException;
 import com.chocolatestore.mappers.OrderMapper;
 import com.chocolatestore.repository.OrderRepository;
 import com.chocolatestore.utils.PdfCreator;
@@ -32,6 +33,9 @@ public class OrderService {
 
     public ArrayList<OrderDTOResponseByNumber> getAllOrdersByNumberOfCurrentCustomer(String login) {
         ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByCustomersLogin(login);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
+        }
         ArrayList<OrderDTOResponseByNumber> result = new ArrayList<>();
         HashMap<Long, ArrayList<Order>> ordersMap = new HashMap<>();
         Long key = 0l;
@@ -50,19 +54,21 @@ public class OrderService {
                 ordersMap.entrySet()) {
             result.add(
                     orderMapper.mapOrderToOrderDTOResponseByNumber(
-                            orderEntry.getValue()
-                                    .stream()
-                                    .collect(Collectors.toList())));
+                            new ArrayList<>(orderEntry.getValue())));
         }
         return result;
     }
 
     public ArrayList<Order> getAllOrders() {
-        return (ArrayList<Order>) orderRepository.findAll();
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAll();
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
+        }
+        return orders;
     }
 
     public OrderDTOResponse getOrderById(long id) {
-        return orderMapper.mapOrderToOrderDTOResponse(orderRepository.findById(id).get());
+        return orderMapper.mapOrderToOrderDTOResponse(orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order with id " + id + "not found!")));
     }
 
     public Order createOrder(OrderDTORequestCreate o) {
@@ -99,12 +105,19 @@ public class OrderService {
     }
 
     public OrderDTOResponseByNumber getOrderDTOResponseByNumber(long orderNumber) {
-        return orderMapper.mapOrderToOrderDTOResponseByNumber(orderRepository.findAllByOrderNumber(orderNumber));
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
+        }
+        return orderMapper.mapOrderToOrderDTOResponseByNumber(orders);
     }
 
     public ArrayList<Order> findAllByOrderNumber(long orderNumber) {
-        orderRepository.findAllByOrderNumber(orderNumber);
-        return (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
+        }
+        return orders;
     }
 
     public byte[] createPdfFromOrderDtoResponse(Long number) {
