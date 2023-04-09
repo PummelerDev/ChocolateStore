@@ -11,10 +11,11 @@ import com.chocolatestore.utils.PdfCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,12 +30,35 @@ public class OrderService {
         this.orderMapper = orderMapper;
     }
 
-    public ArrayList<OrderDTOResponse> getAllOrders() {
-        return (ArrayList<OrderDTOResponse>) orderRepository
-                .findAll()
-                .stream()
-                .map(orderMapper::mapOrderToOrderDTOResponse)
-                .collect(Collectors.toList());
+    public ArrayList<OrderDTOResponseByNumber> getAllOrdersByNumberOfCurrentCustomer(String login) {
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByCustomersLogin(login);
+        ArrayList<OrderDTOResponseByNumber> result = new ArrayList<>();
+        HashMap<Long, ArrayList<Order>> ordersMap = new HashMap<>();
+        Long key = 0l;
+        Order value;
+        for (int i = 0; i < orders.size(); i++) {
+            key = orders.get(i).getOrderNumber();
+            value = orders.get(i);
+            if (!ordersMap.containsKey(key)) {
+                ordersMap.put(key, new ArrayList<>());
+                ordersMap.get(key).add(value);
+            } else if (ordersMap.containsKey(key) && !ordersMap.get(key).contains(value)) {
+                ordersMap.get(key).add(value);
+            }
+        }
+        for (Map.Entry<Long, ArrayList<Order>> orderEntry :
+                ordersMap.entrySet()) {
+            result.add(
+                    orderMapper.mapOrderToOrderDTOResponseByNumber(
+                            orderEntry.getValue()
+                                    .stream()
+                                    .collect(Collectors.toList())));
+        }
+        return result;
+    }
+
+    public ArrayList<Order> getAllOrders() {
+        return (ArrayList<Order>) orderRepository.findAll();
     }
 
     public OrderDTOResponse getOrderById(long id) {
@@ -74,13 +98,18 @@ public class OrderService {
         return orderRepository.finishOrderByNumber(orderNumber);
     }
 
-    public OrderDTOResponseByNumber getOrderByNumber(long orderNumber) {
+    public OrderDTOResponseByNumber getOrderDTOResponseByNumber(long orderNumber) {
         return orderMapper.mapOrderToOrderDTOResponseByNumber(orderRepository.findAllByOrderNumber(orderNumber));
+    }
+
+    public ArrayList<Order> findAllByOrderNumber(long orderNumber) {
+        orderRepository.findAllByOrderNumber(orderNumber);
+        return (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
     }
 
     public byte[] createPdfFromOrderDtoResponse(Long number) {
         PdfCreator pdfCreator = new PdfCreator();
-        return pdfCreator.createPdfFromOrderDtoResponse(getOrderByNumber(number));
+        return pdfCreator.createPdfFromOrderDtoResponse(getOrderDTOResponseByNumber(number));
     }
 
     private long createOrderId() {
@@ -88,5 +117,13 @@ public class OrderService {
         LocalDateTime localDateTime = LocalDateTime.now();
         String value = localDateTime.format(formatter) + String.valueOf(localDateTime.getNano()).substring(0, 7);
         return Long.parseLong(value);
+    }
+
+    public boolean toCheckCustomerAndOrderNumber(Long number, String login) {
+        ArrayList<Order> orders = findAllByOrderNumber(number);
+        if (orders.get(0) == null | orders.get(0).getCustomer().getLogin() != login) {
+            return true;
+        }
+        return false;
     }
 }

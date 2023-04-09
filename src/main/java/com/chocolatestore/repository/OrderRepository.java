@@ -16,6 +16,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(nativeQuery = true, value = "insert into orders values(default, :#{#orderNumber}, :#{#order.productId}, :#{#order.customerId}, :#{#order.quantity}, default, default, default, default) returning *")
     Order saveCustom(@Param("order") OrderDTORequestCreate order, @Param("orderNumber") long orderNumber);
 
+    @Query(nativeQuery = true, value = "select * from orders where customer_id=(select id from customers where login=:login)")
+    List<Order>getAllOrdersByNumberOfCurrentCustomer(String login);
+
     @Query(nativeQuery = true, value = "insert into orders values(default, :#{#orderNumber}, :#{#order.productId}, (select distinct customer_id from orders where order_number =:#{#orderNumber}), :#{#order.quantity}, default, default, default, default) returning *")
     Order addByOrderNumber(@Param("order") OrderDTORequestAddOrUpdate order, @Param("orderNumber") long orderNumber);
 
@@ -37,4 +40,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(nativeQuery = true, value = "select * from orders where order_number =:orderNumber and cancelled=false")
     List<Order> findAllByOrderNumber(long orderNumber);
+
+@Query(nativeQuery = true, value = "select * from orders where customer_id=(select id from customers where login=:login)")
+    List<Order> findAllByCustomersLogin(String login);
+
+//    @Query(nativeQuery = true, value = "select * from orders where order_number =:orderNumber and cancelled=false")
+//    List<Order> findAllByOrderNumberAndLogin(long orderNumber, String login);
 }

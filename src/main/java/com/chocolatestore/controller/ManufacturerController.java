@@ -28,31 +28,37 @@ public class ManufacturerController {
         this.manufacturerService = manufacturerService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<ManufacturerDTO>> getAllManufacturers() {
         List<ManufacturerDTO> md = manufacturerService.getAllManufacturers();
         return new ResponseEntity<>(md, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ManufacturerDTO> getManufacturerById(@PathVariable long id) {
-        ManufacturerDTO md = manufacturerService.getManufacturerById(id);
-        return new ResponseEntity<>(md, md != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+    @GetMapping("/all/admin")
+    public ResponseEntity<List<Manufacturer>> getAllManufacturersForAdmin() {
+        List<Manufacturer> md = manufacturerService.getAllManufacturersForAdmin();
+        return new ResponseEntity<>(md, HttpStatus.OK);
     }
 
-    @PostMapping
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Manufacturer> getManufacturerById(@PathVariable long id) {
+        Manufacturer m = manufacturerService.getManufacturerById(id);
+        return new ResponseEntity<>(m, m != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+    }
+
+    @PostMapping ("/create")
     public ResponseEntity<HttpStatus> createManufacturer(@RequestParam String manufacturerName) {
         Manufacturer m = manufacturerService.createManufacturer(manufacturerName);
         return new ResponseEntity<>(m != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<HttpStatus> updateManufacturerById(@PathVariable long id, @RequestParam String manufacturerName) {
         Manufacturer m = manufacturerService.updateManufacturer(id, manufacturerName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{id}/remove")
+    @DeleteMapping("/get/{id}/remove")
     public ResponseEntity<HttpStatus> removeManufacturerById(@PathVariable long id) {
         boolean result = manufacturerService.removeManufacturerById(id);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);

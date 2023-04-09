@@ -34,6 +34,11 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public ArrayList<Product> getAllProductForAdmin() {
+        return (ArrayList<Product>) productRepository.findAll();
+    }
+
+
     // TODO: 31.03.2023 productRepository returns optional. need to rewrite it.
     public ProductDTOResponse getProductById(long id) {
         return productMapper.mapProductToProductDTOResponse(productRepository.findById(id).get());

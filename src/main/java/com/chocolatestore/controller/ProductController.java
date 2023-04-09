@@ -29,31 +29,37 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<ProductDTOResponse>> getAllProduct() {
         List<ProductDTOResponse> pdr = productService.getAllProducts();
         return new ResponseEntity<>(pdr, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/all/admin")
+    public ResponseEntity<List<Product>> getAllProductForAdmin() {
+        List<Product> p = productService.getAllProductForAdmin();
+        return new ResponseEntity<>(p, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/{id}")
     public ResponseEntity<ProductDTOResponse> getProductById(@PathVariable long id) {
         ProductDTOResponse pdr = productService.getProductById(id);
         return new ResponseEntity<>(pdr, pdr != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
-    @PostMapping
+    @PostMapping ("/create")
     public ResponseEntity<HttpStatus> createProduct(@RequestBody ProductDTORequest pdr) {
         productService.createProduct(pdr);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<HttpStatus> updateProductById(@PathVariable long id, @RequestBody ProductDTORequest pdr) {
         Product p = productService.updateProductById(id, pdr);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/{id}/remove")
+    @DeleteMapping("/get/{id}/remove")
     public ResponseEntity<HttpStatus> removeProductById(@PathVariable long id) {
         boolean result = productService.removeProductById(id);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);

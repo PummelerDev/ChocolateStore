@@ -29,9 +29,12 @@ public class ManufacturerService {
                 .map(manufacturerMapper::mapManufacturerToManufacturerDTO)
                 .collect(Collectors.toList());
     }
+    public ArrayList<Manufacturer> getAllManufacturersForAdmin() {
+        return (ArrayList<Manufacturer>) manufacturerRepository.findAll();
+    }
 
-    public ManufacturerDTO getManufacturerById(long id) {
-        return manufacturerMapper.mapManufacturerToManufacturerDTO(manufacturerRepository.findById(id).get());
+    public Manufacturer getManufacturerById(long id) {
+        return manufacturerRepository.findById(id).get();
     }
 
     public Manufacturer createManufacturer(String manufacturerName) {
