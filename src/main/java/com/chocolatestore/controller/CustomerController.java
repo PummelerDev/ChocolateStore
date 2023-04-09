@@ -35,10 +35,10 @@ public class CustomerController {
         this.jwtProvider = jwtProvider;
     }
 
-    @GetMapping
-    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
-        List<CustomerDTO> customersDTO = customerService.getAllCustomers();
-        return new ResponseEntity<>(customersDTO, HttpStatus.OK);
+    @GetMapping("/all")
+    public ResponseEntity<List<Customer>> getAllCustomers() {
+        List<Customer> customers = customerService.getAllCustomers();
+        return new ResponseEntity<>(customers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -54,28 +54,20 @@ public class CustomerController {
         return new ResponseEntity<>(cd, cd != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
-    @PostMapping
-    public ResponseEntity<HttpStatus> createCustomer(@RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
+    @PutMapping("/update")
+    public ResponseEntity<HttpStatus> updateCustomerById(@RequestHeader String authorization, @RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        Customer c = customerService.createCustomer(cd);
-        return new ResponseEntity<>(c != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+        String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
+        boolean result = customerService.updateById(login, cd);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<HttpStatus> updateCustomerById(@PathVariable long id, @RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        Customer c = customerService.updateById(id, cd);
-        // TODO: 03.04.2023 how to check?
-        return new ResponseEntity<>(c != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteCustomerById(@PathVariable long id) {
-        boolean result = customerService.deleteCustomerById(id);
+    @DeleteMapping("/current/delete")
+    public ResponseEntity<HttpStatus> deleteCustomerById(@RequestHeader String authorization) {
+        String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
+        boolean result = customerService.deleteCustomerByLogin(login);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
@@ -91,15 +83,20 @@ public class CustomerController {
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @GetMapping("/login/{id}")
-    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@PathVariable Long id){
-        CustomerDTOLoginPassword cdlp =customerService.getLoginAndPassword(id);
-        return new ResponseEntity<>(cdlp, !cdlp.getLogin().isBlank() ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    @GetMapping("/login")
+    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@RequestHeader String authorization){
+        String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
+        CustomerDTOLoginPassword cdlp =customerService.getLoginAndPassword(login);
+        return new ResponseEntity<>(cdlp, !cdlp.getLogin().isBlank() ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
-    @PutMapping("/login/{id}")
-    public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@PathVariable Long id, @RequestBody CustomerDTOLoginPassword cdlp){
-        boolean result =customerService.updateLoginAndPassword(id, cdlp);
+    @PutMapping("/update/login/")
+    public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@RequestHeader String authorization, @RequestBody @Valid CustomerDTOLoginPassword cdlp, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
+        boolean result =customerService.updateLoginAndPassword(login, cdlp);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

@@ -1,23 +1,30 @@
 package com.chocolatestore.domain.DTO;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class CustomerDTO {
     @NotNull
+    @Length(max = 50)
     private String firstName;
 
     @NotNull
+    @Length(max = 50)
     private String lastName;
 
     @NotNull
+    @Length(max = 250)
     private String address;
 
     @NotNull
+    @Length(max = 50)
     private String phone;
 
     @NotNull
+    @Length(max = 250)
     @Email(regexp = "^([a-zA-Z0-9]+(\\.|\\-|_)?[a-zA-Z0-9]+)+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]{2,4}$")
     private String email;
 

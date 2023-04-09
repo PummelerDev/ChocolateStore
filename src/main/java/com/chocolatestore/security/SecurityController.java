@@ -6,10 +6,12 @@ import com.chocolatestore.domain.response.JwtResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.net.http.HttpResponse;
 
 @RestController
@@ -23,12 +25,18 @@ public class SecurityController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<HttpResponse> registrationUser(@RequestBody RegistrationCustomer registrationCustomer) {
+    public ResponseEntity<HttpResponse> registrationUser(@RequestBody @Valid RegistrationCustomer registrationCustomer, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<>(securityService.registration(registrationCustomer) ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<JwtResponse> auth(@RequestBody JwtAuthRequest jwtAuthRequest) {
+    public ResponseEntity<JwtResponse> auth(@RequestBody @Valid JwtAuthRequest jwtAuthRequest, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         String result = securityService.getToken(jwtAuthRequest);
         if (!result.isBlank()) {
             return new ResponseEntity<>(new JwtResponse(result), HttpStatus.OK);

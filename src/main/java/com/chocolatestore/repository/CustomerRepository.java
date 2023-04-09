@@ -16,14 +16,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query(nativeQuery = true, value = "insert into customers values(default, :#{#customer.firstName}, :#{#customer.lastName}, :#{#customer.address}, :#{#customer.phone}, :#{#customer.email}, :#{#customer.purchaseAmount}, :#{#customer.login}, :#{#customer.password}, default, default, :#{#customer.deleted}) returning *")
     Customer save(@Param("customer") Customer customer);
 
-    @Query(nativeQuery = true, value = "update customers set is_deleted = true, changed = default where id = :id returning is_deleted")
-    boolean deleteByIdCustom(long id);
+    @Query(nativeQuery = true, value = "update customers set is_deleted = true, changed = default where login = :login returning is_deleted")
+    boolean deleteByLoginCustom(String login);
 
     @Query(nativeQuery = true, value = "update customers set is_deleted = false, changed = default where id = :id returning true")
     boolean restoreByIdCustom(long id);
 
-    @Query(nativeQuery = true, value = "update customers set login  =:#{#cdlp.login}, password =:#{#cdlp.password}, changed =default where id =:id returning true")
-    boolean updateLoginPassword(long id, @Param("cdlp") CustomerDTOLoginPassword cdlp);
+    @Query(nativeQuery = true, value = "update customers set login  =:#{#cdlp.login}, password =:#{#cdlp.password}, changed =default where login =:login returning true")
+    boolean updateLoginPassword(String login, @Param("cdlp") CustomerDTOLoginPassword cdlp);
 
     Optional<Customer> findCustomerByLogin(String login);
 

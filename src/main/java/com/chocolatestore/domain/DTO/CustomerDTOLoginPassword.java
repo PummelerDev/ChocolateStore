@@ -1,9 +1,20 @@
 package com.chocolatestore.domain.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class CustomerDTOLoginPassword {
+
+    @NotNull
+    @Length(max = 200)
     private String login;
+
+    @NotNull
+    @Length(max = 200)
+    @JsonIgnore
     private String password;
 
     @Override

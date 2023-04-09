@@ -40,6 +40,9 @@ public class SecurityService {
             Customer customer = new Customer();
             customer.setFirstName(registrationUser.getFirstName());
             customer.setLastName(registrationUser.getLastName());
+            customer.setAddress(registrationUser.getAddress());
+            customer.setPhone(registrationUser.getPhone());
+            customer.setEmail(registrationUser.getEmail());
             customer.setLogin(registrationUser.getLogin());
             customer.setPassword(passwordEncoder.encode(registrationUser.getPassword()));
 
