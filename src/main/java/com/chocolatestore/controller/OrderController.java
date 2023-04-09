@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -54,7 +56,10 @@ public class OrderController {
     }
 
     @PostMapping("/create") // TODO: 09.04.2023 all
-    public ResponseEntity<Long> createOrder(@RequestBody OrderDTORequestCreate odr) {
+    public ResponseEntity<Long> createOrder(@RequestBody @Valid OrderDTORequestCreate odr, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         Order o = orderService.createOrder(odr);
         if (o != null && o.getOrderNumber() >= 0) {
             return new ResponseEntity<>(o.getOrderNumber(), HttpStatus.CREATED);
@@ -63,15 +68,21 @@ public class OrderController {
     }
 
     @PostMapping("/add/{orderNumber}") // TODO: 09.04.2023 all
-    public ResponseEntity<HttpStatus> addToOrderByOrderNumber(@PathVariable long orderNumber, @RequestBody OrderDTORequestAddOrUpdate odrau) {
+    public ResponseEntity<HttpStatus> addToOrderByOrderNumber(@PathVariable long orderNumber, @RequestBody @Valid OrderDTORequestAddOrUpdate odrau, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         Order o = orderService.addToOrderByOrderNumber(orderNumber, odrau);
         return new ResponseEntity<>(o != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @PutMapping("/update/{key}") // TODO: 09.04.2023 all
-    public ResponseEntity<HttpStatus> updateOrderByKey(@PathVariable long key, @RequestBody OrderDTORequestAddOrUpdate odrau) {
-        orderService.updateOrderById(key, odrau);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<HttpStatus> updateOrderByKey(@PathVariable long key, @RequestBody @Valid OrderDTORequestAddOrUpdate odrau, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        Order o = orderService.updateOrderById(key, odrau);
+        return new ResponseEntity<>(o != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/get/{id}/remove") // TODO: 09.04.2023 ??? CHECK IT! admin
@@ -108,7 +119,7 @@ public class OrderController {
     public ResponseEntity<OrderDTOResponseByNumber> getOrderByNumberCurrentCustomer(@PathVariable long number, @RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         if (orderService.toCheckCustomerAndOrderNumber(number, login)) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         OrderDTOResponseByNumber odrn = orderService.getOrderDTOResponseByNumber(number);
         return new ResponseEntity<>(odrn, odrn.getOrderNumber() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
@@ -124,7 +135,7 @@ public class OrderController {
     public ResponseEntity<byte[]> getOrderPdfByOrderNumberForCurrentCustomer(@PathVariable Long number, @RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         if (orderService.toCheckCustomerAndOrderNumber(number, login)) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         byte[] result = orderService.createPdfFromOrderDtoResponse(number);
         if (result.length == 0) {

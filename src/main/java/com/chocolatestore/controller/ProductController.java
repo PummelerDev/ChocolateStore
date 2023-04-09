@@ -7,6 +7,7 @@ import com.chocolatestore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,6 +30,7 @@ public class ProductController {
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
+
 
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTOResponse>> getAllProduct() {
@@ -47,16 +50,22 @@ public class ProductController {
         return new ResponseEntity<>(pdr, pdr != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
-    @PostMapping ("/create")
-    public ResponseEntity<HttpStatus> createProduct(@RequestBody ProductDTORequest pdr) {
-        productService.createProduct(pdr);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @PostMapping("/create")
+    public ResponseEntity<HttpStatus> createProduct(@RequestBody @Valid ProductDTORequest pdr, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        Product p = productService.createProduct(pdr);
+        return new ResponseEntity<>(p != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<HttpStatus> updateProductById(@PathVariable long id, @RequestBody ProductDTORequest pdr) {
+    public ResponseEntity<HttpStatus> updateProductById(@PathVariable long id, @RequestBody @Valid ProductDTORequest pdr, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         Product p = productService.updateProductById(id, pdr);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(p != null ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/get/{id}/remove")

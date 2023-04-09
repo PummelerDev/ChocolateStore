@@ -2,22 +2,37 @@ package com.chocolatestore.domain.DTO;
 
 import com.chocolatestore.utils.Kind;
 import com.chocolatestore.utils.Topping;
+import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 public class ProductDTORequest {
+
+    @NotNull
     private Kind kind;
 
+    @NotNull
     private Topping topping;
 
+    @Positive
     private long manufacturerId;
 
+    @NotNull
+    @Length(max = 50)
     private String name;
 
+    @NotNull
+    @Length(max = 500)
     private String description;
 
+    @Positive
     private int weight;
 
+    @Positive
     private double price;
 
     @Override

@@ -1,10 +1,14 @@
 package com.chocolatestore.domain.DTO;
 
+import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 public class OrderDTORequestAddOrUpdate {
 
+    @Positive
     private Long productId;
+
+    @Positive
     private Integer quantity;
 
     @Override

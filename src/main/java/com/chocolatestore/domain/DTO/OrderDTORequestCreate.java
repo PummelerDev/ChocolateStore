@@ -1,11 +1,20 @@
 package com.chocolatestore.domain.DTO;
 
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 public class OrderDTORequestCreate {
 
+    @Positive
     private Long productId;
+
+    @Positive
     private Long customerId;
+
+   @Positive
     private Integer quantity;
 
     @Override
