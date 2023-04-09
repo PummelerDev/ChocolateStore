@@ -113,7 +113,7 @@ create table if not exists roles
     customer_id bigint
     constraint roles_customers_id_fk
     references customers,
-    roles       varchar(50)   default 'USER'::character varying not null,
+    role       varchar(50)   default 'USER'::character varying not null,
     created     timestamp default now(),
     changed     timestamp default now()
     );

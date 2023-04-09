@@ -3,6 +3,7 @@ package com.chocolatestore.controller;
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
 import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
+import com.chocolatestore.security.JWT.JwtProvider;
 import com.chocolatestore.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -25,10 +27,12 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final JwtProvider jwtProvider;
 
     @Autowired
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, JwtProvider jwtProvider) {
         this.customerService = customerService;
+        this.jwtProvider = jwtProvider;
     }
 
     @GetMapping
@@ -40,6 +44,13 @@ public class CustomerController {
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable long id) {
         CustomerDTO cd = customerService.getCustomerById(id);
+        return new ResponseEntity<>(cd, cd != null ? HttpStatus.OK : HttpStatus.CONFLICT);
+    }
+
+    @GetMapping("/current")
+    public ResponseEntity<CustomerDTO> getCurrentCustomerById(@RequestHeader String authorization) {
+        String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
+        CustomerDTO cd = customerService.getCustomerDTOByLogin(login);
         return new ResponseEntity<>(cd, cd != null ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 

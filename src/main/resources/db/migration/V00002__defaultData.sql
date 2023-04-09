@@ -1,7 +1,9 @@
-insert into customers values (default, 'Jack', 'Sparrow', 'Tortuga', 1234523, 'jack.tortuga@pirat.rum', default, 'jacklogin', '$2a$12$PD9hZgWMPel2Bxe3R3vwF.SDb1XQ2gbDhMXaWc9cWbDWBzl7OcmP.', default, default);
-insert into customers values (default, 'Gandalf', 'the Gray', 'Middle Earth', 'i will find you myself', 'gandalf.the_white_soon@wizard.mag', default, 'gandalflogin', '$2a$12$by/TgvEkqNc4C1JgyF.rheH6pncUiPvoH80PmuOL3gHKsWmKaVQSG', default, default);
-insert into customers values (default, 'Remus ', 'Lupin', 'Hogwarts', 'send me an owl', 'lupin.professor@were.wolf', default, 'remuslogin', '$2a$12$bNxx6.xzSvtt8X1.hGZ0P.uRJ31lgtq4EqUgQctwyLg5K8f4N2uU6', default, default);
+insert into customers values (default, 'Jack', 'Sparrow', 'Tortuga', 1234523, 'jack.tortuga@pirat.rum', default, 'jacklogin', '$2a$10$UGx4FDhU6/We9rzOwFpz4OSF/LgF8pcmjK/7U6r.yL8e7CzePLAOG', default, default);
+insert into customers values (default, 'Gandalf', 'the Gray', 'Middle Earth', 'i will find you myself', 'gandalf.the_white_soon@wizard.mag', default, 'gandalflogin', '$2a$10$g/zo6HvkjEX/8cU20OwQWeI3ihNUWpDqgZFDcLInT5Ltp2DU9s40C', default, default);
+insert into customers values (default, 'Remus ', 'Lupin', 'Hogwarts', 'send me an owl', 'lupin.professor@were.wolf', default, 'remuslogin', '$2a$10$HUFxOg3FiHbTPA60Do3qverLfx22rTG11DBaDmyn4OMJCHfXSQYZ.', default, default);
 
+insert into roles values (default, 1, 'USER');
+insert into roles values (default, 2, 'USER');
 insert into roles values (default, 3, 'ADMIN');
 
 insert into roles values (default, 1, 'ADMIN', default);

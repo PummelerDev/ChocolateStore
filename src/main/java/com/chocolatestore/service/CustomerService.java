@@ -38,6 +38,10 @@ public class CustomerService {
         return customerMapper.mapCustomerToCustomerDTO(customerRepository.findById(id).get());
     }
 
+    public CustomerDTO getCustomerDTOByLogin(String login) {
+        return customerMapper.mapCustomerToCustomerDTO(customerRepository.findCustomerByLogin(login).get());
+    }
+
     public Customer createCustomer(CustomerDTO cd) {
         return customerRepository.save(customerMapper.mapCustomerDTOToCustomer(cd));
     }
