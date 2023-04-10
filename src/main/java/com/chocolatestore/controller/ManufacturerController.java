@@ -2,7 +2,6 @@ package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
-import com.chocolatestore.exceptions.ManufacturerNotFoundException;
 import com.chocolatestore.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

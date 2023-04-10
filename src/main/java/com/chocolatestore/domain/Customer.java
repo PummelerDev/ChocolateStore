@@ -12,7 +12,6 @@ import javax.validation.constraints.PositiveOrZero;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-//@Component
 @Entity
 @Table(name = "customers")
 public class Customer {

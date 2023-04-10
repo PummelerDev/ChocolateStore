@@ -44,13 +44,9 @@ public class SecurityService {
             customer.setEmail(registrationUser.getEmail());
             customer.setLogin(registrationUser.getLogin());
             customer.setPassword(passwordEncoder.encode(registrationUser.getPassword()));
-
             Customer savedCustomer = customerRepository.save(customer);
             customerRepository.addCustomerRole(savedCustomer.getId());
-
-            if (savedCustomer != null) {
-                return true;
-            }
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }

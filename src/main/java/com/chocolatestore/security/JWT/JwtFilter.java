@@ -17,13 +17,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 public class JwtFilter extends GenericFilterBean {
 
-    private String token;
-    private String customerLogin;
     private final JwtProvider jwtProvider;
     private final CustomerService customerService;
 
@@ -35,11 +32,11 @@ public class JwtFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        token = ((HttpServletRequest) servletRequest).getHeader("Authorization");
+        String token = ((HttpServletRequest) servletRequest).getHeader("Authorization");
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
             token = token.substring(7);
             if (jwtProvider.isValid(token)) {
-                customerLogin = jwtProvider.getLoginFromJwt(token);
+                String customerLogin = jwtProvider.getLoginFromJwt(token);
                 Customer customer = customerService.getCustomerByLogin(customerLogin);
                 if (!customer.isDeleted()) {
                     UserDetails userDetails = User

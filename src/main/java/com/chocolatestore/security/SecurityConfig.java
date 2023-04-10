@@ -50,7 +50,6 @@ public class SecurityConfig {
                 .antMatchers("/customer/**", "/manufacturer/**", "/product/**", "/order/**").hasRole("ADMIN")
                 .antMatchers("/customer/current", "/customer/update", "/customer/current/delete", "/customer/login", "/customer/update/login/").hasRole("USER")
                 .antMatchers("/order/all","/order/create", "/order/add/**", "/order/update/**", "/order/cancel/**", "/order/collect/**", "/order/number/**").hasRole("USER")
-//                .antMatchers("/customer/**", "/manufacturer").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

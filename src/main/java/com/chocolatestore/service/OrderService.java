@@ -41,11 +41,11 @@ public class OrderService {
         }
         ArrayList<OrderDTOResponseByNumber> result = new ArrayList<>();
         HashMap<Long, ArrayList<Order>> ordersMap = new HashMap<>();
-        Long key = 0l;
+        Long key;
         Order value;
-        for (int i = 0; i < orders.size(); i++) {
-            key = orders.get(i).getOrderNumber();
-            value = orders.get(i);
+        for (Order order : orders) {
+            key = order.getOrderNumber();
+            value = order;
             if (!ordersMap.containsKey(key)) {
                 ordersMap.put(key, new ArrayList<>());
                 ordersMap.get(key).add(value);
