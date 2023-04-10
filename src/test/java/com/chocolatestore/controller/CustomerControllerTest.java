@@ -2,6 +2,7 @@ package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
+import com.chocolatestore.domain.DTO.CustomerDTOForUpdate;
 import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
 import com.chocolatestore.security.JWT.JwtProvider;
 import com.chocolatestore.service.CustomerService;
@@ -55,6 +56,7 @@ class CustomerControllerTest {
 
     private Customer customer;
     private CustomerDTO customerDTO;
+    private CustomerDTOForUpdate customerDTOForUpdate;
     private List<Customer> customers;
     private MvcResult mvcResult;
 
@@ -67,6 +69,7 @@ class CustomerControllerTest {
     void setUp() {
         customer = new Customer(1, "testFname", "testLname", "address", "phone", "email@google.com", 10, "login", "password", new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()), false);
         customerDTO = new CustomerDTO("testFname", "testLname", "address", "phone", "email@google.com", 10);
+        customerDTOForUpdate = new CustomerDTOForUpdate("testFname", "testLname", "address", "phone", "email@google.com");
         customers = new ArrayList<>();
         customers.add(customer);
         mvcResult = null;
@@ -121,12 +124,12 @@ class CustomerControllerTest {
     void updateCustomerByLogin() throws Exception {
         String token = "token";
         when(jwtProvider.getLoginFromJwt(anyString())).thenReturn(token);
-        when(customerService.updateByLogin(token, customerDTO)).thenReturn(true);
+        when(customerService.updateByLogin(token, customerDTOForUpdate)).thenReturn(true);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter wrapper = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = wrapper.writeValueAsString(customerDTO);
+        String requestJson = wrapper.writeValueAsString(customerDTOForUpdate);
 
         mvcResult = mockMvc
                 .perform(MockMvcRequestBuilders
@@ -136,7 +139,7 @@ class CustomerControllerTest {
                 .andExpect(status().isNoContent())
                 .andReturn();
         assertThat(mvcResult.getResponse().getContentAsString(), allOf(notNullValue()));
-        Mockito.verify(customerService, Mockito.times(1)).updateByLogin(token, customerDTO);
+        Mockito.verify(customerService, Mockito.times(1)).updateByLogin(token, customerDTOForUpdate);
     }
 
     @Test
