@@ -1,14 +1,24 @@
 package com.chocolatestore.controller;
 
+import com.chocolatestore.domain.DTO.ProductDTOResponse;
+import com.chocolatestore.domain.DTO.ProductDTORequest;
 import com.chocolatestore.domain.Product;
 import com.chocolatestore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
@@ -22,36 +32,46 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Product>> getAllProduct() {
-        List<Product> products = productService.getAllProducts();
-        return new ResponseEntity<>(products, HttpStatus.OK);
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductDTOResponse>> getAllProduct() {
+        List<ProductDTOResponse> pdr = productService.getAllProducts();
+        return new ResponseEntity<>(pdr, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable long id) {
-        Product product = productService.getProductById(id);
-        return new ResponseEntity<>(product, product.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+    @GetMapping("/all/admin")
+    public ResponseEntity<List<Product>> getAllProductForAdmin() {
+        List<Product> p = productService.getAllProductForAdmin();
+        return new ResponseEntity<>(p, HttpStatus.OK);
     }
 
-    // TODO: 26.02.2023 add validation
-    @PostMapping
-    public ResponseEntity<HttpStatus> createProduct(@ModelAttribute Product product) {
-        int result = productService.createProduct(product);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ProductDTOResponse> getProductById(@PathVariable long id) {
+        ProductDTOResponse pdr = productService.getProductById(id);
+        return new ResponseEntity<>(pdr, HttpStatus.OK);
     }
 
-    @PutMapping
-    @ResponseBody
-    public ResponseEntity<HttpStatus> updateProductById(@ModelAttribute Product product) {
-        int result = productService.updateProductById(product);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    @PostMapping("/create")
+    public ResponseEntity<HttpStatus> createProduct(@RequestBody @Valid ProductDTORequest pdr, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        Product p = productService.createProduct(pdr);
+        return new ResponseEntity<>(p != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<HttpStatus> deleteProductById(@PathVariable long id) {
-        int result = productService.deleteProductById(id);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<HttpStatus> updateProductById(@PathVariable long id, @RequestBody @Valid ProductDTORequest pdr, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(bindingResult.toString());
+        }
+        Product p = productService.updateProductById(id, pdr);
+        return new ResponseEntity<>(p != null ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    }
+
+    @DeleteMapping("/get/{id}/remove")
+    public ResponseEntity<HttpStatus> removeProductById(@PathVariable long id) {
+        boolean result = productService.removeProductById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

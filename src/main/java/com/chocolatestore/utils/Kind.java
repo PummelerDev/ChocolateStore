@@ -1,4 +1,4 @@
-package com.chocolatestore.domain;
+package com.chocolatestore.utils;
 
 public enum Kind {
     DARK,

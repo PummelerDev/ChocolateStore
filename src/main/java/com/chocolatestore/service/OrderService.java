@@ -1,129 +1,141 @@
 package com.chocolatestore.service;
 
+import com.chocolatestore.domain.DTO.OrderDTORequestAddOrUpdate;
+import com.chocolatestore.domain.DTO.OrderDTORequestCreate;
+import com.chocolatestore.domain.DTO.OrderDTOResponse;
+import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
+import com.chocolatestore.exceptions.OrderNotFoundException;
+import com.chocolatestore.mappers.OrderMapper;
+import com.chocolatestore.repository.CustomerRepository;
+import com.chocolatestore.repository.OrderRepository;
+import com.chocolatestore.utils.PdfCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class OrderService {
 
-    public ArrayList<Order> getAllOrders() {
-        ArrayList<Order> orders = new ArrayList<>();
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "select * from orders"
-            );
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                Order order = new Order();
-                orderMapping(order, resultSet);
-                orders.add(order);
+    private final OrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
+    private final OrderMapper orderMapper;
+
+    @Autowired
+    public OrderService(OrderRepository orderRepository, CustomerRepository customerRepository, OrderMapper orderMapper) {
+        this.orderRepository = orderRepository;
+        this.customerRepository = customerRepository;
+        this.orderMapper = orderMapper;
+    }
+
+    public ArrayList<OrderDTOResponseByNumber> getAllOrdersByNumberOfCurrentCustomer(String login) {
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByCustomersLogin(login);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
+        }
+        ArrayList<OrderDTOResponseByNumber> result = new ArrayList<>();
+        HashMap<Long, ArrayList<Order>> ordersMap = new HashMap<>();
+        Long key;
+        Order value;
+        for (Order order : orders) {
+            key = order.getOrderNumber();
+            value = order;
+            if (!ordersMap.containsKey(key)) {
+                ordersMap.put(key, new ArrayList<>());
+                ordersMap.get(key).add(value);
+            } else if (ordersMap.containsKey(key) && !ordersMap.get(key).contains(value)) {
+                ordersMap.get(key).add(value);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }
+        for (Map.Entry<Long, ArrayList<Order>> orderEntry :
+                ordersMap.entrySet()) {
+            result.add(
+                    orderMapper.mapOrderToOrderDTOResponseByNumber(
+                            new ArrayList<>(orderEntry.getValue())));
+        }
+        return result;
+    }
+
+    public ArrayList<Order> getAllOrders() {
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAll();
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
         }
         return orders;
     }
 
-    public Order getOrderById(long id) {
-        Order order = new Order();
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "select * from orders where id =?"
-            );
-            preparedStatement.setLong(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            orderMapping(order, resultSet);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return order;
+    public OrderDTOResponse getOrderById(long id) {
+        return orderMapper.mapOrderToOrderDTOResponse(orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order with id " + id + "not found!")));
     }
 
-    // TODO: 26.02.2023 can i use order like a param? or should i use fields from order?
-    // TODO: 26.02.2023 how should i send product_id and customer_id?
-    public int createOrder(Order order) {
-        int value = 0;
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "insert into orders(id, order_number, product_id, customer_id, quantity, created, changed, canceled, finished) values(default, ?, ?, ?, ?, default, default, default, default)"
-            );
-            preparedStatement.setLong(1, createOrderId());
-            preparedStatement.setLong(2, order.getProductId());
-            preparedStatement.setLong(3, order.getCustomerId());
-            preparedStatement.setLong(4, order.getQuantity());
-            value = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return value;
+    public Order createOrder(OrderDTORequestCreate o) {
+        return orderRepository.saveCustom(o, createOrderId());
     }
 
-    // TODO: 26.02.2023 can i use order like a param? or should i use fields from order?
-    public int updateOrderById(Order order) {
-        int value = 0;
-        try {
-            Order theSameOrderFromDB = getOrderById(order.getId());
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "update orders set product_id=?, customer_id=?, quantity=?, changed=default, canceled=?, finished=? where id=?"
-            );
-            preparedStatement.setLong(1, order.getProductId() == 0 ? theSameOrderFromDB.getProductId() : order.getProductId());
-            preparedStatement.setLong(2, order.getCustomerId() == 0 ? theSameOrderFromDB.getCustomerId() : order.getCustomerId());
-            preparedStatement.setInt(3, order.getQuantity() == 0 ? theSameOrderFromDB.getQuantity() : order.getQuantity());
-            preparedStatement.setBoolean(4, order.isCancelled()==false? theSameOrderFromDB.isCancelled() : order.isCancelled());
-            preparedStatement.setBoolean(5, order.isFinished()==false? theSameOrderFromDB.isFinished(): order.isFinished());
-            preparedStatement.setLong(6, order.getId());
-            value = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return value;
+    public Order addToOrderByOrderNumber(Long orderNumber, OrderDTORequestAddOrUpdate o) {
+        return orderRepository.addByOrderNumber(o, orderNumber);
     }
 
-    public int deleteOrderById(long id) {
-        int value = 0;
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "delete from orders where id=?"
-            );
-            preparedStatement.setLong(1, id);
-            value = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return value;
+    public Order updateOrderById(long id, OrderDTORequestAddOrUpdate o) {
+        return orderRepository.saveAndFlushCustom(id, o);
     }
 
-    private void orderMapping(Order order, ResultSet resultSet) throws SQLException {
-        order.setId(resultSet.getLong("id"));
-        order.setOrderNumber(resultSet.getLong("order_number"));
-        order.setProductId(resultSet.getLong("product_id"));
-        order.setCustomerId(resultSet.getLong("customer_id"));
-        order.setQuantity(resultSet.getInt("quantity"));
-        order.setCreated(resultSet.getTimestamp("created"));
-        order.setChanged(resultSet.getTimestamp("changed"));
-        order.setCancelled(resultSet.getBoolean("cancelled"));
-        order.setFinished(resultSet.getBoolean("finished"));
+    public boolean removeOrderById(long id) {
+        orderRepository.deleteById(id);
+        return !orderRepository.existsById(id);
+    }
+
+    public boolean cancelOrderByNumberAndId(long orderNumber, long id) {
+        return orderRepository.cancelOrderByNumberAndId(orderNumber, id);
+    }
+
+    public boolean cancelAllOrdersByNumber(long orderNumber) {
+        return orderRepository.cancelAllOrdersByNumber(orderNumber);
+    }
+
+    public boolean collectOrderByNumber(long orderNumber) {
+        return orderRepository.collectOrderByNumber(orderNumber);
+    }
+
+    @Transactional
+    public boolean finishOrderByNumber(long orderNumber) {
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
+        if (orders.isEmpty()){
+            throw new OrderNotFoundException("Order with number " + orderNumber + " not found!");
+        }
+        OrderDTOResponseByNumber odrn = orderMapper.mapOrderToOrderDTOResponseByNumber(orders);
+        boolean result = customerRepository.updatePurchaseAmountById(orders.get(0).getCustomer().getId(),odrn.getTotalPrice());
+        if (!result){
+            throw new RuntimeException();
+        }
+        return orderRepository.finishOrderByNumber(orderNumber);
+    }
+
+    public OrderDTOResponseByNumber getOrderDTOResponseByNumber(long orderNumber) {
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
+        }
+        return orderMapper.mapOrderToOrderDTOResponseByNumber(orders);
+    }
+
+    public ArrayList<Order> findAllByOrderNumber(long orderNumber) {
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
+        if (orders.isEmpty()) {
+            throw new OrderNotFoundException("Orders not found!");
+        }
+        return orders;
+    }
+
+    public byte[] createPdfFromOrderDtoResponse(Long number) {
+        PdfCreator pdfCreator = new PdfCreator();
+        return pdfCreator.createPdfFromOrderDtoResponse(getOrderDTOResponseByNumber(number));
     }
 
     private long createOrderId() {
@@ -131,5 +143,13 @@ public class OrderService {
         LocalDateTime localDateTime = LocalDateTime.now();
         String value = localDateTime.format(formatter) + String.valueOf(localDateTime.getNano()).substring(0, 7);
         return Long.parseLong(value);
+    }
+
+    public boolean toCheckCustomerAndOrderNumber(Long number, String login) {
+        ArrayList<Order> orders = findAllByOrderNumber(number);
+        if (orders.get(0) == null | orders.get(0).getCustomer().getLogin() != login) {
+            return true;
+        }
+        return false;
     }
 }

@@ -1,64 +1,24 @@
-package com.chocolatestore.domain;
+package com.chocolatestore.domain.DTO;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@Entity
-@Table(name = "orders")
-public class Order {
+public class OrderDTOResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
-    @SequenceGenerator(name = "order_seq", sequenceName = "orders_id_seq1", allocationSize = 1)
-    private long id;
-
-    @Column(name = "order_number")
     private long orderNumber;
-
-    @OneToOne
-    @JsonManagedReference
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    @OneToOne
-    @JsonManagedReference
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
-
-    @Column(name = "quantity")
+    private ProductDTOResponse product;
+    private CustomerDTO customer;
     private int quantity;
-
-    @Column(name = "created")
     private Timestamp created;
-
-    @Column(name = "changed")
     private Timestamp changed;
-
-    @Column(name = "cancelled")
     private boolean cancelled;
-
-    @Column(name = "collected")
     private boolean collected;
-
-    @Column(name = "finished")
     private boolean finished;
 
     @Override
     public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", orderNumber=" + orderNumber +
+        return "OrderDTOResponse{" +
+                "orderNumber=" + orderNumber +
                 ", product=" + product +
                 ", customer=" + customer +
                 ", quantity=" + quantity +
@@ -74,21 +34,13 @@ public class Order {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return id == order.id && orderNumber == order.orderNumber && quantity == order.quantity && cancelled == order.cancelled && collected == order.collected && finished == order.finished && Objects.equals(product, order.product) && Objects.equals(customer, order.customer) && Objects.equals(created, order.created) && Objects.equals(changed, order.changed);
+        OrderDTOResponse that = (OrderDTOResponse) o;
+        return orderNumber == that.orderNumber && quantity == that.quantity && cancelled == that.cancelled && collected == that.collected && finished == that.finished && Objects.equals(product, that.product) && Objects.equals(customer, that.customer) && Objects.equals(created, that.created) && Objects.equals(changed, that.changed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, orderNumber, product, customer, quantity, created, changed, cancelled, collected, finished);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+        return Objects.hash(orderNumber, product, customer, quantity, created, changed, cancelled, collected, finished);
     }
 
     public long getOrderNumber() {
@@ -99,19 +51,19 @@ public class Order {
         this.orderNumber = orderNumber;
     }
 
-    public Product getProduct() {
+    public ProductDTOResponse getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(ProductDTOResponse product) {
         this.product = product;
     }
 
-    public Customer getCustomer() {
+    public CustomerDTO getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(CustomerDTO customer) {
         this.customer = customer;
     }
 
@@ -163,11 +115,10 @@ public class Order {
         this.finished = finished;
     }
 
-    public Order() {
+    public OrderDTOResponse() {
     }
 
-    public Order(long id, long orderNumber, Product product, Customer customer, int quantity, Timestamp created, Timestamp changed, boolean cancelled, boolean collected, boolean finished) {
-        this.id = id;
+    public OrderDTOResponse(long orderNumber, ProductDTOResponse product, CustomerDTO customer, int quantity, Timestamp created, Timestamp changed, boolean cancelled, boolean collected, boolean finished) {
         this.orderNumber = orderNumber;
         this.product = product;
         this.customer = customer;

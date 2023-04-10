@@ -1,13 +1,19 @@
 package com.chocolatestore.controller;
 
+import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
 import com.chocolatestore.service.ManufacturerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -22,36 +28,39 @@ public class ManufacturerController {
         this.manufacturerService = manufacturerService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Manufacturer>> getAllManufacturers() {
-        List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
-        return new ResponseEntity<>(manufacturers, HttpStatus.OK);
+    @GetMapping("/all")
+    public ResponseEntity<List<ManufacturerDTO>> getAllManufacturers() {
+        List<ManufacturerDTO> md = manufacturerService.getAllManufacturers();
+        return new ResponseEntity<>(md, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/all/admin")
+    public ResponseEntity<List<Manufacturer>> getAllManufacturersForAdmin() {
+        List<Manufacturer> md = manufacturerService.getAllManufacturersForAdmin();
+        return new ResponseEntity<>(md, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/{id}")
     public ResponseEntity<Manufacturer> getManufacturerById(@PathVariable long id) {
-        Manufacturer manufacturer = manufacturerService.getManufacturerById(id);
-        return new ResponseEntity<>(manufacturer, manufacturer.getId() != 0 ? HttpStatus.OK : HttpStatus.CONFLICT);
+        Manufacturer m = manufacturerService.getManufacturerById(id);
+        return new ResponseEntity<>(m, HttpStatus.OK);
     }
 
-    // TODO: 26.02.2023 add validation
-    @PostMapping
-    public ResponseEntity<HttpStatus> createManufacturer(@RequestParam String name) {
-        int result = manufacturerService.createManufacturer(name);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.CREATED : HttpStatus.CONFLICT);
+    @PostMapping("/create")
+    public ResponseEntity<HttpStatus> createManufacturer(@RequestParam String manufacturerName) {
+        Manufacturer m = manufacturerService.createManufacturer(manufacturerName);
+        return new ResponseEntity<>(m != null ? HttpStatus.CREATED : HttpStatus.CONFLICT);
     }
 
-    @PutMapping
-    @ResponseBody
-    public ResponseEntity<HttpStatus> updateManufacturerById(@ModelAttribute Manufacturer manufacturer) {
-        int result = manufacturerService.updateManufacturer(manufacturer);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<HttpStatus> updateManufacturerById(@PathVariable long id, @RequestParam String manufacturerName) {
+        Manufacturer m = manufacturerService.updateManufacturer(id, manufacturerName);
+        return new ResponseEntity<>(m != null ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseBody
-    public ResponseEntity<HttpStatus> deleteManufacturerById(@PathVariable long id) {
-        int result = manufacturerService.deleteManufacturerById(id);
-        return new ResponseEntity<>(result > 0 ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
+    @DeleteMapping("/get/{id}/remove")
+    public ResponseEntity<HttpStatus> removeManufacturerById(@PathVariable long id) {
+        boolean result = manufacturerService.removeManufacturerById(id);
+        return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 }

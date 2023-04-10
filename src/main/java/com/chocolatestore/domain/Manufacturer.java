@@ -1,16 +1,40 @@
 package com.chocolatestore.domain;
 
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GenerationType;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Objects;
 
-@Component
+@Entity
+@Table(name = "manufacturers")
 public class Manufacturer {
-    private long id =-1; // TODO: 26.02.2023  default -1 or not?
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "manufacturer_seq")
+    @SequenceGenerator(name = "manufacturer_seq", sequenceName = "manufacturers_id_seq", allocationSize = 1)
+    private long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "created")
     private Timestamp created;
+
+    @Column(name = "changed")
     private Timestamp changed;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "manufacturer")
+    @JsonBackReference
+    private Collection<Product> products;
 
     @Override
     public String toString() {
@@ -65,5 +89,24 @@ public class Manufacturer {
 
     public void setChanged(Timestamp changed) {
         this.changed = changed;
+    }
+
+    public Collection<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Collection<Product> products) {
+        this.products = products;
+    }
+
+    public Manufacturer() {
+    }
+
+    public Manufacturer(long id, String name, Timestamp created, Timestamp changed, Collection<Product> products) {
+        this.id = id;
+        this.name = name;
+        this.created = created;
+        this.changed = changed;
+        this.products = products;
     }
 }

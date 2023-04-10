@@ -1,113 +1,66 @@
 package com.chocolatestore.service;
 
+import com.chocolatestore.domain.DTO.ManufacturerDTO;
 import com.chocolatestore.domain.Manufacturer;
-import org.apache.commons.lang3.StringUtils;
+import com.chocolatestore.exceptions.ManufacturerNotFoundException;
+import com.chocolatestore.mappers.ManufacturerMapper;
+import com.chocolatestore.repository.ManufacturerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Service
 public class ManufacturerService {
 
-    public ArrayList<Manufacturer> getAllManufacturers() {
-        ArrayList<Manufacturer> manufacturers = new ArrayList<>();
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "select * from manufacturers"
-            );
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                Manufacturer manufacturer = new Manufacturer();
-                manufacturerMapping(manufacturer, resultSet);
-                manufacturers.add(manufacturer);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    private final ManufacturerRepository manufacturerRepository;
+    private final ManufacturerMapper manufacturerMapper;
+
+    @Autowired
+    public ManufacturerService(ManufacturerRepository manufacturerRepository, ManufacturerMapper manufacturerMapper) {
+        this.manufacturerRepository = manufacturerRepository;
+        this.manufacturerMapper = manufacturerMapper;
+    }
+
+    public ArrayList<ManufacturerDTO> getAllManufacturers() {
+        ArrayList<Manufacturer> manufacturers = (ArrayList<Manufacturer>) manufacturerRepository.findAll();
+        if (manufacturers.isEmpty()) {
+            throw new ManufacturerNotFoundException("Manufacturers not found!");
         }
-        return manufacturers;
+        return (ArrayList<ManufacturerDTO>) manufacturers.stream()
+                .map(manufacturerMapper::mapManufacturerToManufacturerDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ArrayList<Manufacturer> getAllManufacturersForAdmin() {
+        ArrayList<Manufacturer> md = (ArrayList<Manufacturer>) manufacturerRepository.findAll();
+        if (md.isEmpty()) {
+            throw new ManufacturerNotFoundException("Manufacturers not found!");
+        }
+        return md;
     }
 
     public Manufacturer getManufacturerById(long id) {
-        Manufacturer manufacturer = new Manufacturer();
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "select * from manufacturers where id =?"
-            );
-            preparedStatement.setLong(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            manufacturerMapping(manufacturer, resultSet);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return manufacturer;
+        return manufacturerRepository.findById(id).orElseThrow(() -> new ManufacturerNotFoundException("Manufacturer with id " + id + " not found!"));
     }
 
-    public int createManufacturer(String name) {
-        int result = 0;
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "insert into manufacturers(id, name, created, changed) values (default, ?, default, default)"
-            );
-            preparedStatement.setString(1, name);
-            result = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public Manufacturer createManufacturer(String manufacturerName) {
+        Manufacturer m = new Manufacturer();
+        m.setName(manufacturerName);
+        return manufacturerRepository.save(m);
     }
 
-    // TODO: 26.02.2023 can i use manufacturer like a param? or should i use fields from manufacturer?
-    public int updateManufacturer(Manufacturer manufacturer) {
-        int result = 0;
-        try {
-            Manufacturer theSameManufacturerFromDB = getManufacturerById(manufacturer.getId());
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "update manufacturers set name = ?, changed = default where id=?"
-            );
-            preparedStatement.setString(1, StringUtils.isBlank(manufacturer.getName()) ? theSameManufacturerFromDB.getName() : manufacturer.getName());
-            preparedStatement.setLong(2, manufacturer.getId());
-            result = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public Manufacturer updateManufacturer(long id, String manufacturerName) {
+        Manufacturer fromDB = manufacturerRepository.findById(id).get();
+        Manufacturer intoDB = new Manufacturer();
+        intoDB.setId(id);
+        intoDB.setName(manufacturerName.isBlank() ? fromDB.getName() : manufacturerName);
+        return manufacturerRepository.saveAndFlush(intoDB);
     }
 
-    public int deleteManufacturerById(long id) {
-        int result = 0;
-        try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/chocolateStoreDB", "postgres", "root"
-            );
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "delete from manufacturers where id=?"
-            );
-            preparedStatement.setLong(1, id);
-            result = preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private void manufacturerMapping(Manufacturer manufacturer, ResultSet resultSet) throws SQLException {
-        manufacturer.setId(resultSet.getLong("id"));
-        manufacturer.setName(resultSet.getString("name"));
-        manufacturer.setCreated(resultSet.getTimestamp("created"));
-        manufacturer.setChanged(resultSet.getTimestamp("changed"));
+    public boolean removeManufacturerById(long id) {
+        manufacturerRepository.deleteById(id);
+        return !manufacturerRepository.existsById(id);
     }
 }

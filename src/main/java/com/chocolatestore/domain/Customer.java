@@ -1,23 +1,58 @@
 package com.chocolatestore.domain;
 
-import org.springframework.stereotype.Component;
-
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GenerationType;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Column;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.PositiveOrZero;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@Component
+@Entity
+@Table(name = "customers")
 public class Customer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq" )
+    @SequenceGenerator(name = "customer_seq", sequenceName = "customers_id_seq", allocationSize = 1)
     private long id;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "address")
     private String address;
+
+    @Column(name = "phone")
     private String phone;
+
+    @Column(name = "email")
+    @Email(regexp = "^([a-zA-Z0-9]+(\\.|\\-|_)?[a-zA-Z0-9]+)+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]{2,4}$")
     private String email;
+
+    @Column(name = "purchase_amount")
+    @PositiveOrZero
     private double purchaseAmount;
+
+    @Column(name = "login")
     private String login;
+
+    @Column(name = "password")
     private String password;
+
+    @Column(name = "created")
     private Timestamp created;
+
+    @Column(name = "changed")
     private Timestamp changed;
+
+    @Column(name = "is_deleted")
     private boolean isDeleted;
 
     @Override
@@ -145,5 +180,23 @@ public class Customer {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public Customer() {
+    }
+
+    public Customer(long id, String firstName, String lastName, String address, String phone, String email, double purchaseAmount, String login, String password, Timestamp created, Timestamp changed, boolean isDeleted) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+        this.purchaseAmount = purchaseAmount;
+        this.login = login;
+        this.password = password;
+        this.created = created;
+        this.changed = changed;
+        this.isDeleted = isDeleted;
     }
 }
