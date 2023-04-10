@@ -24,6 +24,7 @@ public class CustomerMapper {
         cd.setAddress(c.getAddress());
         cd.setPhone(c.getPhone());
         cd.setEmail(c.getEmail());
+        cd.setPurchaseAmount(c.getPurchaseAmount());
         return cd;
     }
 

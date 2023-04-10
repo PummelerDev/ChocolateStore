@@ -41,7 +41,7 @@ public class CustomerService {
         return customerMapper.mapCustomerToCustomerDTO(customerRepository.findCustomerByLogin(login).orElseThrow(() -> new CustomerNotFoundException("Customer with login " + login + " not found!")));
     }
 
-    public Boolean updateById(String login, CustomerDTO cd) {
+    public Boolean updateByLogin(String login, CustomerDTO cd) {
         Customer fromDB = customerRepository.findCustomerByLogin(login).get();
         Customer intoDB = new Customer();
         intoDB.setId(fromDB.getId());

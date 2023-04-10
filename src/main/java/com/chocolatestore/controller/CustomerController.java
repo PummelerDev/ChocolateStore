@@ -5,6 +5,7 @@ import com.chocolatestore.domain.DTO.CustomerDTO;
 import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
 import com.chocolatestore.security.JWT.JwtProvider;
 import com.chocolatestore.service.CustomerService;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class CustomerController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<CustomerDTO> getCurrentCustomerByLogin(@RequestHeader String authorization) {
+    public ResponseEntity<CustomerDTO> getCurrentCustomerByLogin(@RequestHeader @Parameter(hidden = true) String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         CustomerDTO cd = customerService.getCustomerDTOByLogin(login);
         return new ResponseEntity<>(cd, HttpStatus.OK);
@@ -61,7 +62,7 @@ public class CustomerController {
             throw new ValidationException(bindingResult.toString());
         }
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
-        boolean result = customerService.updateById(login, cd);
+        boolean result = customerService.updateByLogin(login, cd);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
@@ -85,13 +86,13 @@ public class CustomerController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@RequestHeader String authorization) {
+    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@RequestHeader  String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         CustomerDTOLoginPassword cdlp = customerService.getLoginAndPassword(login);
         return new ResponseEntity<>(cdlp, HttpStatus.OK);
     }
 
-    @PutMapping("/update/login/")
+    @PutMapping("/update/login")
     public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@RequestHeader String authorization, @RequestBody @Valid CustomerDTOLoginPassword cdlp, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult.toString());

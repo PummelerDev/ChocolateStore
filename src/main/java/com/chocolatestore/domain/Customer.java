@@ -181,4 +181,22 @@ public class Customer {
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
     }
+
+    public Customer() {
+    }
+
+    public Customer(long id, String firstName, String lastName, String address, String phone, String email, double purchaseAmount, String login, String password, Timestamp created, Timestamp changed, boolean isDeleted) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+        this.purchaseAmount = purchaseAmount;
+        this.login = login;
+        this.password = password;
+        this.created = created;
+        this.changed = changed;
+        this.isDeleted = isDeleted;
+    }
 }

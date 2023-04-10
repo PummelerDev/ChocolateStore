@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Objects;
 
 public class CustomerDTO {
@@ -28,13 +29,17 @@ public class CustomerDTO {
     @Email(regexp = "^([a-zA-Z0-9]+(\\.|\\-|_)?[a-zA-Z0-9]+)+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]{2,4}$")
     private String email;
 
+    @Positive
+    private double purchaseAmount;
+
     @Override
     public String toString() {
-        return "CustomerRequestDtoCreate{" +
+        return "CustomerDTO{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
+                ", purchaseAmount=" + purchaseAmount +
                 ", email='" + email + '\'' +
                 '}';
     }
@@ -44,12 +49,12 @@ public class CustomerDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CustomerDTO that = (CustomerDTO) o;
-        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(address, that.address) && Objects.equals(phone, that.phone) && Objects.equals(email, that.email);
+        return Double.compare(that.purchaseAmount, purchaseAmount) == 0 && Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(address, that.address) && Objects.equals(phone, that.phone) && Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, address, phone, email);
+        return Objects.hash(firstName, lastName, address, phone, purchaseAmount, email);
     }
 
     public String getFirstName() {
@@ -84,6 +89,14 @@ public class CustomerDTO {
         this.phone = phone;
     }
 
+    public double getPurchaseAmount() {
+        return purchaseAmount;
+    }
+
+    public void setPurchaseAmount(double purchaseAmount) {
+        this.purchaseAmount = purchaseAmount;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -95,11 +108,12 @@ public class CustomerDTO {
     public CustomerDTO() {
     }
 
-    public CustomerDTO(String firstName, String lastName, String address, String phone, String email, String login, String password) {
+    public CustomerDTO(String firstName, String lastName, String address, String phone, String email, double purchaseAmount) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phone = phone;
         this.email = email;
+        this.purchaseAmount = purchaseAmount;
     }
 }
