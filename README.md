@@ -2,7 +2,7 @@
 ___
 Project for TeachMeSkills
 
-# Descriptions:
+# Description:
 
 
 This is the server side of the store. Allows you to optimize the processes of creating and processing orders. as well as providing product information.
