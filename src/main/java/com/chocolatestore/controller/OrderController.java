@@ -4,6 +4,7 @@ import com.chocolatestore.domain.DTO.*;
 import com.chocolatestore.domain.Order;
 import com.chocolatestore.security.JWT.JwtProvider;
 import com.chocolatestore.service.OrderService;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<OrderDTOResponseByNumber>> getAllOrdersOfCurrentCustomer(@RequestHeader String authorization) {
+    public ResponseEntity<List<OrderDTOResponseByNumber>> getAllOrdersOfCurrentCustomer(@RequestHeader @Parameter(hidden = true) String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         List<OrderDTOResponseByNumber> orders = orderService.getAllOrdersByNumberOfCurrentCustomer(login);
         return new ResponseEntity<>(orders, HttpStatus.OK);

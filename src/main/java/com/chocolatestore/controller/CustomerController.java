@@ -2,6 +2,7 @@ package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
+import com.chocolatestore.domain.DTO.CustomerDTOForUpdate;
 import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
 import com.chocolatestore.security.JWT.JwtProvider;
 import com.chocolatestore.service.CustomerService;
@@ -57,17 +58,17 @@ public class CustomerController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<HttpStatus> updateCustomerByLogin(@RequestHeader String authorization, @RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> updateCustomerByLogin(@RequestHeader String authorization, @RequestBody @Valid CustomerDTOForUpdate cdu, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult.toString());
         }
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
-        boolean result = customerService.updateByLogin(login, cd);
+        boolean result = customerService.updateByLogin(login, cdu);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/current/delete")
-    public ResponseEntity<HttpStatus> deleteCustomerByLogin(@RequestHeader String authorization) {
+    public ResponseEntity<HttpStatus> deleteCustomerByLogin(@RequestHeader @Parameter(hidden = true) String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         boolean result = customerService.deleteCustomerByLogin(login);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);
@@ -86,14 +87,14 @@ public class CustomerController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@RequestHeader  String authorization) {
+    public ResponseEntity<CustomerDTOLoginPassword> getLoginAndPassword(@RequestHeader @Parameter(hidden = true)  String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         CustomerDTOLoginPassword cdlp = customerService.getLoginAndPassword(login);
         return new ResponseEntity<>(cdlp, HttpStatus.OK);
     }
 
     @PutMapping("/update/login")
-    public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@RequestHeader String authorization, @RequestBody @Valid CustomerDTOLoginPassword cdlp, BindingResult bindingResult) {
+    public ResponseEntity<CustomerDTOLoginPassword> updateLoginAndPassword(@RequestHeader @Parameter(hidden = true) String authorization, @RequestBody @Valid CustomerDTOLoginPassword cdlp, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult.toString());
         }
