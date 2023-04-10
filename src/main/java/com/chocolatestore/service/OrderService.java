@@ -7,27 +7,30 @@ import com.chocolatestore.domain.DTO.OrderDTOResponseByNumber;
 import com.chocolatestore.domain.Order;
 import com.chocolatestore.exceptions.OrderNotFoundException;
 import com.chocolatestore.mappers.OrderMapper;
+import com.chocolatestore.repository.CustomerRepository;
 import com.chocolatestore.repository.OrderRepository;
 import com.chocolatestore.utils.PdfCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
     private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper) {
+    public OrderService(OrderRepository orderRepository, CustomerRepository customerRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
+        this.customerRepository = customerRepository;
         this.orderMapper = orderMapper;
     }
 
@@ -100,7 +103,17 @@ public class OrderService {
         return orderRepository.collectOrderByNumber(orderNumber);
     }
 
+    @Transactional
     public boolean finishOrderByNumber(long orderNumber) {
+        ArrayList<Order> orders = (ArrayList<Order>) orderRepository.findAllByOrderNumber(orderNumber);
+        if (orders.isEmpty()){
+            throw new OrderNotFoundException("Order with number " + orderNumber + " not found!");
+        }
+        OrderDTOResponseByNumber odrn = orderMapper.mapOrderToOrderDTOResponseByNumber(orders);
+        boolean result = customerRepository.updatePurchaseAmountById(orders.get(0).getCustomer().getId(),odrn.getTotalPrice());
+        if (!result){
+            throw new RuntimeException();
+        }
         return orderRepository.finishOrderByNumber(orderNumber);
     }
 

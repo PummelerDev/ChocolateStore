@@ -38,11 +38,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(nativeQuery = true, value = "update orders set finished = true, changed = default where order_number=:orderNumber returning finished")
     boolean finishOrderByNumber(long orderNumber);
 
+    @Query(nativeQuery = true, value = "select product_id from orders where order_number=:orderNumber")
+    double getTotalPriceForOrder(long orderNumber);
+
     @Query(nativeQuery = true, value = "select * from orders where order_number =:orderNumber and cancelled=false")
     List<Order> findAllByOrderNumber(long orderNumber);
 
 @Query(nativeQuery = true, value = "select * from orders where customer_id=(select id from customers where login=:login)")
     List<Order> findAllByCustomersLogin(String login);
+
 
 //    @Query(nativeQuery = true, value = "select * from orders where order_number =:orderNumber and cancelled=false")
 //    List<Order> findAllByOrderNumberAndLogin(long orderNumber, String login);

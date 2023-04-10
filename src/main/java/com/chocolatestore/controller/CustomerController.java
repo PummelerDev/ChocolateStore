@@ -49,14 +49,14 @@ public class CustomerController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<CustomerDTO> getCurrentCustomerById(@RequestHeader String authorization) {
+    public ResponseEntity<CustomerDTO> getCurrentCustomerByLogin(@RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         CustomerDTO cd = customerService.getCustomerDTOByLogin(login);
         return new ResponseEntity<>(cd, HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<HttpStatus> updateCustomerById(@RequestHeader String authorization, @RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
+    public ResponseEntity<HttpStatus> updateCustomerByLogin(@RequestHeader String authorization, @RequestBody @Valid CustomerDTO cd, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult.toString());
         }
@@ -66,7 +66,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/current/delete")
-    public ResponseEntity<HttpStatus> deleteCustomerById(@RequestHeader String authorization) {
+    public ResponseEntity<HttpStatus> deleteCustomerByLogin(@RequestHeader String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         boolean result = customerService.deleteCustomerByLogin(login);
         return new ResponseEntity<>(result ? HttpStatus.NO_CONTENT : HttpStatus.CONFLICT);

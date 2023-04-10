@@ -33,4 +33,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Modifying
     @Query(nativeQuery = true, value = "insert into roles values (default, :customerId, default, default)")
     void addCustomerRole(long customerId);
+
+    @Query(nativeQuery = true, value = "update customers set purchase_amount = purchase_amount + :totalAmount where id=:customerId returning true")
+    boolean updatePurchaseAmountById(long customerId, double totalAmount);
 }
