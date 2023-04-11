@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=root
+    image: postgres:latest
+    networks:
+      - backendStore
+
+  app:
+    container_name: store
+    image: pummelerdev/chocolatestore:v1
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db
+    networks:
+      - backendStore
+
+networks:
+  backendStore:
+    driver: bridge
