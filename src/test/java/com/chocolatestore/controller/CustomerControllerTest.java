@@ -2,6 +2,7 @@ package com.chocolatestore.controller;
 
 import com.chocolatestore.domain.Customer;
 import com.chocolatestore.domain.DTO.CustomerDTO;
+import com.chocolatestore.domain.DTO.CustomerDTOForUpdate;
 import com.chocolatestore.domain.DTO.CustomerDTOLoginPassword;
 import com.chocolatestore.security.JWT.JwtProvider;
 import com.chocolatestore.service.CustomerService;
@@ -45,16 +46,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class CustomerControllerTest {
 
-    private final MockMvc mockMvc;
-
     @MockBean
     private CustomerService customerService;
 
     @MockBean
     private JwtProvider jwtProvider;
 
+    private final MockMvc mockMvc;
     private Customer customer;
     private CustomerDTO customerDTO;
+    private CustomerDTOForUpdate customerDTOForUpdate;
     private List<Customer> customers;
     private MvcResult mvcResult;
 
@@ -65,10 +66,38 @@ class CustomerControllerTest {
 
     @BeforeEach
     void setUp() {
-        customer = new Customer(1, "testFname", "testLname", "address", "phone", "email@google.com", 10, "login", "password", new Timestamp(new Date().getTime()), new Timestamp(new Date().getTime()), false);
-        customerDTO = new CustomerDTO("testFname", "testLname", "address", "phone", "email@google.com", 10);
+        customer = new Customer();
+        customer.setId(1l);
+        customer.setFirstName("testFname");
+        customer.setLastName("testLname");
+        customer.setAddress("address");
+        customer.setPhone("phone");
+        customer.setEmail("email@google.com");
+        customer.setPurchaseAmount(10);
+        customer.setLogin("login");
+        customer.setPassword("password");
+        customer.setCreated(new Timestamp(new Date().getTime()));
+        customer.setChanged(new Timestamp(new Date().getTime()));
+        customer.setDeleted(false);
+
+        customerDTO = new CustomerDTO();
+        customerDTO.setFirstName("testFname");
+        customerDTO.setLastName("testLname");
+        customerDTO.setAddress("address");
+        customerDTO.setPhone("phone");
+        customerDTO.setEmail("email@google.com");
+        customerDTO.setPurchaseAmount(10);
+
+        customerDTOForUpdate = new CustomerDTOForUpdate();
+        customerDTOForUpdate.setFirstName("testFname");
+        customerDTOForUpdate.setLastName("testLname");
+        customerDTOForUpdate.setAddress("address");
+        customerDTOForUpdate.setPhone("phone");
+        customerDTOForUpdate.setEmail("email@google.com");
+
         customers = new ArrayList<>();
         customers.add(customer);
+
         mvcResult = null;
     }
 
@@ -105,8 +134,8 @@ class CustomerControllerTest {
         when(jwtProvider.getLoginFromJwt(anyString())).thenReturn(token);
         when(customerService.getCustomerDTOByLogin(token)).thenReturn(customerDTO);
         mvcResult = mockMvc
-                .perform(MockMvcRequestBuilders.
-                        get("/customer/current", anyString())
+                .perform(MockMvcRequestBuilders
+                        .get("/customer/current", anyString())
                         .header("authorization", "Bearer afajpfjdsap")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -121,12 +150,12 @@ class CustomerControllerTest {
     void updateCustomerByLogin() throws Exception {
         String token = "token";
         when(jwtProvider.getLoginFromJwt(anyString())).thenReturn(token);
-        when(customerService.updateByLogin(token, customerDTO)).thenReturn(true);
+        when(customerService.updateByLogin(token, customerDTOForUpdate)).thenReturn(true);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter wrapper = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = wrapper.writeValueAsString(customerDTO);
+        String requestJson = wrapper.writeValueAsString(customerDTOForUpdate);
 
         mvcResult = mockMvc
                 .perform(MockMvcRequestBuilders
@@ -136,7 +165,7 @@ class CustomerControllerTest {
                 .andExpect(status().isNoContent())
                 .andReturn();
         assertThat(mvcResult.getResponse().getContentAsString(), allOf(notNullValue()));
-        Mockito.verify(customerService, Mockito.times(1)).updateByLogin(token, customerDTO);
+        Mockito.verify(customerService, Mockito.times(1)).updateByLogin(token, customerDTOForUpdate);
     }
 
     @Test
@@ -146,8 +175,8 @@ class CustomerControllerTest {
         when(jwtProvider.getLoginFromJwt(anyString())).thenReturn(token);
         when(customerService.deleteCustomerByLogin(token)).thenReturn(true);
         mvcResult = mockMvc
-                .perform(MockMvcRequestBuilders.
-                        delete("/customer/current/delete", anyString())
+                .perform(MockMvcRequestBuilders
+                        .delete("/customer/current/delete", anyString())
                         .header("authorization", "Bearer afajpfjdsap")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
@@ -186,8 +215,8 @@ class CustomerControllerTest {
         when(jwtProvider.getLoginFromJwt(anyString())).thenReturn(token);
         when(customerService.getLoginAndPassword(token)).thenReturn(cdlp);
         mvcResult = mockMvc
-                .perform(MockMvcRequestBuilders.
-                        get("/customer/login", anyString())
+                .perform(MockMvcRequestBuilders
+                        .get("/customer/login", anyString())
                         .header("authorization", "Bearer afajpfjdsap")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
