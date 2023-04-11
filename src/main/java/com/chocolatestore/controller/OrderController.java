@@ -58,11 +58,12 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Long> createOrder(@RequestBody @Valid OrderDTORequestCreate odr, BindingResult bindingResult) {
+    public ResponseEntity<Long> createOrder(@RequestBody @Valid OrderDTORequestCreate odr, @RequestHeader @Parameter(hidden = true) String authorization, BindingResult bindingResult) {
+        String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult.toString());
         }
-        Order o = orderService.createOrder(odr);
+        Order o = orderService.createOrder(odr, login);
         if (o != null && o.getOrderNumber() >= 0) {
             return new ResponseEntity<>(o.getOrderNumber(), HttpStatus.CREATED);
         }

@@ -47,9 +47,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/product/all","/manufacturer/all","/registration", "/auth").permitAll() //if basic auth, can use '/swagger-ui/index.html' for ADMIN role
+                .antMatchers("/customer/current", "/customer/update", "/customer/current/delete", "/customer/login", "/customer/update/login/").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/order/all","/order/create", "/order/add/**", "/order/update/**", "/order/cancel/**", "/order/collect/**", "/order/number/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/actuator/**","/customer/**", "/manufacturer/**", "/product/**", "/order/**").hasRole("ADMIN")
-                .antMatchers("/customer/current", "/customer/update", "/customer/current/delete", "/customer/login", "/customer/update/login/").hasRole("USER")
-                .antMatchers("/order/all","/order/create", "/order/add/**", "/order/update/**", "/order/cancel/**", "/order/collect/**", "/order/number/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

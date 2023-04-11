@@ -1,5 +1,6 @@
 package com.chocolatestore.domain.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ public class OrderDTORequestCreate {
     private Long productId;
 
     @Positive
+    @JsonIgnore
     private Long customerId;
 
    @Positive

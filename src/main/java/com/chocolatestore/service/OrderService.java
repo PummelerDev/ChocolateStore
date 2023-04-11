@@ -74,8 +74,8 @@ public class OrderService {
         return orderMapper.mapOrderToOrderDTOResponse(orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order with id " + id + "not found!")));
     }
 
-    public Order createOrder(OrderDTORequestCreate o) {
-        return orderRepository.saveCustom(o, createOrderId());
+    public Order createOrder(OrderDTORequestCreate o, String login) {
+        return orderRepository.saveCustom(o, createOrderId(), login);
     }
 
     public Order addToOrderByOrderNumber(Long orderNumber, OrderDTORequestAddOrUpdate o) {
