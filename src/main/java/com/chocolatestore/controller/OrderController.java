@@ -118,7 +118,7 @@ public class OrderController {
     }
 
     @GetMapping("/number/{number}")
-    public ResponseEntity<OrderDTOResponseByNumber> getOrderByNumberCurrentCustomer(@PathVariable long number, @RequestHeader String authorization) {
+    public ResponseEntity<OrderDTOResponseByNumber> getOrderByNumberCurrentCustomer(@PathVariable long number, @RequestHeader @Parameter(hidden = true) String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         if (!orderService.toCheckCustomerAndOrderNumber(number, login)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -134,7 +134,7 @@ public class OrderController {
     }
 
     @GetMapping("/number/{number}/pdf")
-    public ResponseEntity<byte[]> getOrderPdfByOrderNumberForCurrentCustomer(@PathVariable Long number, @RequestHeader String authorization) {
+    public ResponseEntity<byte[]> getOrderPdfByOrderNumberForCurrentCustomer(@PathVariable Long number, @RequestHeader @Parameter(hidden = true) String authorization) {
         String login = jwtProvider.getLoginFromJwt(authorization.substring(7));
         if (!orderService.toCheckCustomerAndOrderNumber(number, login)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
