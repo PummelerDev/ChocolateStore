@@ -1,4 +1,4 @@
-package com.chocolatestore.domain.reqest;
+package com.chocolatestore.domain.request;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;

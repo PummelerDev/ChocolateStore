@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/product/all","/manufacturer/all","/registration", "/auth").permitAll() //if basic auth, can use '/swagger-ui/index.html' for ADMIN role
+                .antMatchers("/product/all","/manufacturer/all","/registration", "/auth").permitAll()
                 .antMatchers("/customer/current", "/customer/update", "/customer/current/delete", "/customer/login", "/customer/update/login/").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/order/all","/order/create", "/order/add/**", "/order/update/**", "/order/cancel/**", "/order/collect/**", "/order/number/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/actuator/**","/customer/**", "/manufacturer/**", "/product/**", "/order/**").hasRole("ADMIN")

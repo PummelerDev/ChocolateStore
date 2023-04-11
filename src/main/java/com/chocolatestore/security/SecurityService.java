@@ -1,8 +1,8 @@
 package com.chocolatestore.security;
 
 import com.chocolatestore.domain.Customer;
-import com.chocolatestore.domain.reqest.JwtAuthRequest;
-import com.chocolatestore.domain.reqest.RegistrationCustomer;
+import com.chocolatestore.domain.request.JwtAuthRequest;
+import com.chocolatestore.domain.request.RegistrationCustomer;
 import com.chocolatestore.exceptions.CustomerNotFoundException;
 import com.chocolatestore.repository.CustomerRepository;
 import com.chocolatestore.security.JWT.JwtProvider;
